@@ -33,7 +33,7 @@ const (
 	ERC721MethodClassData = "classData"
 	ERC721MethodClassURI  = "classURI"
 	ERC721MethodBalanceOf = "balanceOf"
-	ERC721MethodTransfer  = "transferFrom"
+	ERC721MethodTransfer  = "transferNft"
 	ERC721MethodTokenURI  = "tokenURI"
 	ERC721MethodTokenData = "tokenData"
 	ERC721MethodSetClass  = "setClass"

@@ -5,7 +5,6 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	nfttypes "github.com/cosmos/cosmos-sdk/x/nft"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -13,15 +12,18 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
 
-func (k Keeper) DeployERC721Contract(ctx sdk.Context, class nfttypes.Class) (common.Address, error) {
+func (k Keeper) DeployERC721Contract(ctx sdk.Context,
+	name, symbol, baseURI, classURI, classData string) (common.Address, error) {
 	contractArgs, err := contracts.ERC721PresetMinterPauserContract.ABI.Pack(
 		"",
-		class.Name,
-		class.Symbol,
-		class.Uri,
+		name,
+		symbol,
+		baseURI,
+		classURI,
+		classData,
 	)
 	if err != nil {
-		return common.Address{}, errorsmod.Wrapf(types.ErrABIPack, "class metadata is invalid %s: %s", class.Name, err.Error())
+		return common.Address{}, errorsmod.Wrapf(types.ErrABIPack, "class metadata is invalid %s: %s", name, err.Error())
 	}
 	data := make([]byte, len(contracts.ERC721PresetMinterPauserContract.Bin)+len(contractArgs))
 	copy(data[:len(contracts.ERC721PresetMinterPauserContract.Bin)], contracts.ERC721PresetMinterPauserContract.Bin)
@@ -34,19 +36,54 @@ func (k Keeper) DeployERC721Contract(ctx sdk.Context, class nfttypes.Class) (com
 	contractAddr := crypto.CreateAddress(types.ModuleAddress, nonce)
 	_, err = k.CallEVMWithData(ctx, types.ModuleAddress, nil, data, true)
 	if err != nil {
-		return common.Address{}, errorsmod.Wrapf(err, "failed to deploy contract for %s", class.Name)
+		return common.Address{}, errorsmod.Wrapf(err, "failed to deploy contract for %s", name)
 	}
 
 	return contractAddr, nil
 }
 
-// SetClass sets a class
-func (k Keeper) SetClass(ctx sdk.Context, contract common.Address, class nfttypes.Class) error {
+// MintNft mints an NFT
+func (k Keeper) MintNft(ctx sdk.Context,
+	contract common.Address,
+	to common.Address,
+	tokenId big.Int,
+	tokenURI string,
+	tokenData string,
+) error {
 	erc721 := contracts.ERC721PresetMinterPauserContract.ABI
 	_, err := k.CallEVM(ctx,
 		erc721,
 		types.ModuleAddress, contract, true,
-		types.ERC721MethodSetClass, class.GetUri(), class.GetData())
+		types.ERC721MethodMintNFT, to, tokenId, tokenURI, tokenData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// BurnNft burns an NFT
+func (k Keeper) BurnNft(ctx sdk.Context,
+	contract common.Address,
+	tokenId big.Int,
+) error {
+	erc721 := contracts.ERC721PresetMinterPauserContract.ABI
+	_, err := k.CallEVM(ctx,
+		erc721,
+		types.ModuleAddress, contract, true,
+		types.ERC721MethodBurnNFT, tokenId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SetClass sets a class
+func (k Keeper) SetClass(ctx sdk.Context, contract common.Address, uri string, data string) error {
+	erc721 := contracts.ERC721PresetMinterPauserContract.ABI
+	_, err := k.CallEVM(ctx,
+		erc721,
+		types.ModuleAddress, contract, true,
+		types.ERC721MethodSetClass, uri, data)
 	if err != nil {
 		return err
 	}

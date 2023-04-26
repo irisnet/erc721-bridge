@@ -3,8 +3,6 @@ package types
 import (
 	"context"
 
-	"github.com/irisnet/irismod/modules/nft/exported"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -12,8 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/evmos/ethermint/x/evm/statedb"
 	evmtypes "github.com/evmos/ethermint/x/evm/types"
-
-	nfttypes "github.com/irisnet/irismod/modules/nft/types"
 )
 
 // AccountKeeper defines the expected interface needed to retrieve account info.
@@ -33,15 +29,27 @@ type EVMKeeper interface {
 
 // NFTKeeper defines the expected interface needed to retrieve the IRSMod NFT denom.
 type NFTKeeper interface {
-	SaveDenom(ctx sdk.Context, id, name, schema, symbol string, creator sdk.AccAddress, mintRestricted, updateRestricted bool, description, uri, uriHash, data string) error
-	HasDenom(ctx sdk.Context, denomID string) bool
-	GetDenomInfo(ctx sdk.Context, denomID string) (*nfttypes.Denom, error)
+	SaveClass(ctx sdk.Context, classID, classURI string, classData string) error
+	Mint(ctx sdk.Context, classID, tokenID, tokenURI string, tokenData string, receiver sdk.AccAddress) error
+	Transfer(ctx sdk.Context, classID string, tokenID string, tokenData string, receiver sdk.AccAddress) error
+	Burn(ctx sdk.Context, classID string, tokenID string) error
 
-	SaveNFT(ctx sdk.Context, denomID, tokenID, tokenNm, tokenURI, tokenUriHash, tokenData string, receiver sdk.AccAddress) error
-	RemoveNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error
-	TransferOwnership(ctx sdk.Context, denomID, tokenID, tokenNm, tokenURI, tokenURIHash, tokenData string, srcOwner, dstOwner sdk.AccAddress) error
-	HasNFT(ctx sdk.Context, denomID, tokenID string) bool
-	GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error)
+	GetOwner(ctx sdk.Context, classID string, tokenID string) sdk.AccAddress
+	HasClass(ctx sdk.Context, classID string) bool
+	GetClass(ctx sdk.Context, classID string) (Class, bool)
+}
 
-	Authorize(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error
+// Class defines the interface specifications of collection that can be transferred across chains
+type Class interface {
+	GetID() string
+	GetURI() string
+	GetData() string
+}
+
+// NFT defines the interface specification of nft that can be transferred across chains
+type NFT interface {
+	GetClassID() string
+	GetID() string
+	GetURI() string
+	GetData() string
 }
