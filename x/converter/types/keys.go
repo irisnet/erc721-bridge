@@ -22,3 +22,15 @@ var ModuleAddress common.Address
 func init() {
 	ModuleAddress = common.BytesToAddress(authtypes.NewModuleAddress(ModuleName).Bytes())
 }
+
+// ERC721 Method Names
+const (
+	ERC721MethodMintNFT   = "mintNft"
+	ERC721MethodBurnNFT   = "burnNft"
+	ERC721MethodOwnerOf   = "ownerOf"
+	ERC721MethodName      = "name"
+	ERC721MethodSymbol    = "symbol"
+	ERC721MethodBalanceOf = "balanceOf"
+	ERC721MethodTransfer  = "transferFrom"
+	ERC721MethodTokenURI  = "tokenURI"
+)
