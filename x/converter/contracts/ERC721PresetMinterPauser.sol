@@ -9,9 +9,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract ERC721PresetMinterPauserAutoId is
+contract ERC721PresetMinterPauser is
     Context,
     AccessControlEnumerable,
     ERC721Enumerable,
@@ -19,15 +18,18 @@ contract ERC721PresetMinterPauserAutoId is
     ERC721Pausable,
     ERC721URIStorage
 {
-    using Counters for Counters.Counter;
-
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
-    Counters.Counter private _tokenIdTracker;
-
     string private _baseTokenURI;
+    string private _classURI;
+    string private _classData;
+
+    // Optional mapping for token URIs
+    mapping(uint256 => string) private _tokenURIs;
+    // Optional mapping for token datas
+    mapping(uint256 => string) private _tokenDatas;
 
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE`, `MINTER_ROLE` and `PAUSER_ROLE` to the
@@ -39,8 +41,13 @@ contract ERC721PresetMinterPauserAutoId is
     constructor(
         string memory name,
         string memory symbol,
-        string memory baseTokenURI
+        string memory baseTokenURI,
+        string memory classURI_,
+        string memory classData_
     ) ERC721(name, symbol) {
+        _classURI = classURI_;
+        _classData = classData_;
+
         _baseTokenURI = baseTokenURI;
 
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -65,7 +72,7 @@ contract ERC721PresetMinterPauserAutoId is
      *
      * - the caller must have the `MINTER_ROLE`.
      */
-    function mint(address to) public virtual {
+    function mint(address to, uint256 tokenId) public virtual {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
             "ERC721PresetMinterPauserAutoId: must have minter role to mint"
@@ -73,8 +80,7 @@ contract ERC721PresetMinterPauserAutoId is
 
         // We cannot just use balanceOf to create the new tokenId because tokens
         // can be burned (destroyed), so we need a separate counter.
-        _mint(to, _tokenIdTracker.current());
-        _tokenIdTracker.increment();
+        _mint(to, tokenId);
     }
 
     /**
@@ -90,19 +96,18 @@ contract ERC721PresetMinterPauserAutoId is
      */
     function mintNft(
         address to,
-        string memory uri
+        uint256 tokenId,
+        string memory uri,
+        string memory _tokenData
     ) public virtual returns (uint256) {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
             "ERC721PresetMinterPauserAutoId: must have minter role to mint"
         );
 
-        // We cannot just use balanceOf to create the new tokenId because tokens
-        // can be burned (destroyed), so we need a separate counter.
-        uint256 tokenId = _tokenIdTracker.current();
         _mint(to, tokenId);
-        _setTokenURI(_tokenIdTracker.current(), uri);
-        _tokenIdTracker.increment();
+        _setTokenURI(tokenId, uri);
+        _setTokenData(tokenId, _tokenData);
         return tokenId;
     }
 
@@ -117,6 +122,18 @@ contract ERC721PresetMinterPauserAutoId is
             "ERC721PresetMinterPauserAutoId: must have burner role to burn"
         );
         _burn(tokenId);
+    }
+
+    function setClass(
+        string memory classURI_,
+        string memory classData_
+    ) public virtual {
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, _msgSender()),
+            "ERC721PresetMinterPauserAutoId: must have admin role to set class data"
+        );
+        _classData = classData_;
+        _classURI = classURI_;
     }
 
     /**
@@ -170,10 +187,46 @@ contract ERC721PresetMinterPauserAutoId is
     }
 
     /**
-     * @dev Gets base token URI.
+     * @dev Returns the token data of the given `tokenId`.
+     *
      */
-    function baseURI() public view virtual returns (string memory) {
-        return _baseTokenURI;
+    function tokenData(
+        uint256 tokenId
+    ) public view virtual returns (string memory) {
+        return _tokenDatas[tokenId];
+    }
+
+    /**
+     * @dev Returns the class data
+     *
+     */
+    function classData() public view virtual returns (string memory) {
+        return _classData;
+    }
+
+    /**
+     * @dev Gets class URI.
+     */
+    function classURI() public view virtual returns (string memory) {
+        return _classURI;
+    }
+
+    /**
+     * @dev Sets `_setTokenData` as the tokenData of `tokenId`.
+     *
+     * Requirements:
+     *
+     * - `tokenId` must exist.
+     */
+    function _setTokenData(
+        uint256 tokenId,
+        string memory _tokenData
+    ) internal virtual {
+        require(
+            _exists(tokenId),
+            "ERC721URIStorage: URI set of nonexistent token"
+        );
+        _tokenDatas[tokenId] = _tokenData;
     }
 
     function _beforeTokenTransfer(
@@ -189,6 +242,10 @@ contract ERC721PresetMinterPauserAutoId is
         uint256 tokenId
     ) internal virtual override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
+
+        if (bytes(_tokenDatas[tokenId]).length != 0) {
+            delete _tokenDatas[tokenId];
+        }
     }
 
     /**

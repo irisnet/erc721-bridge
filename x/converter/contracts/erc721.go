@@ -12,19 +12,19 @@ import (
 
 var (
 	//go:embed compiled_contracts/ERC721PresetMinterPauserAutoId.json
-	ERC721PresetMinterPauserAutoIdJSON []byte //nolint: golint
+	ERC721PresetMinterPauserJSON []byte //nolint: golint
 
-	// ERC721PresetMinterPauserAutoIdContract is the compiled erc721 contract
-	ERC721PresetMinterPauserAutoIdContract evmtypes.CompiledContract
+	// ERC721PresetMinterPauserContract is the compiled erc721 contract
+	ERC721PresetMinterPauserContract evmtypes.CompiledContract
 
-	// ERC721PresetMinterPauserAutoIdAddress is the erc721 module address
-	ERC721PresetMinterPauserAutoIdAddress common.Address
+	// ERC721PresetMinterPauserAddress is the erc721 module address
+	ERC721PresetMinterPauserAddress common.Address
 )
 
 func init() {
-	ERC721PresetMinterPauserAutoIdAddress = types.ModuleAddress
+	ERC721PresetMinterPauserAddress = types.ModuleAddress
 
-	err := json.Unmarshal(ERC721PresetMinterPauserAutoIdJSON, &ERC721PresetMinterPauserAutoIdContract)
+	err := json.Unmarshal(ERC721PresetMinterPauserJSON, &ERC721PresetMinterPauserContract)
 	if err != nil {
 		panic(err)
 	}
