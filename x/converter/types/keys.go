@@ -23,6 +23,24 @@ func init() {
 	ModuleAddress = common.BytesToAddress(authtypes.NewModuleAddress(ModuleName).Bytes())
 }
 
+// prefix bytes for the EVM persistent store
+const (
+	prefixTokenPair = iota + 1
+	prefixTokenPairByERC721
+	prefixTokenPairByClass
+	prefixERC721TokenIDByNativeTokenID
+	prefixNativeTokenIDByERC721TokenID
+)
+
+// KVStore key prefixes
+var (
+	KeyPrefixTokenPair                    = []byte{prefixTokenPair}
+	KeyPrefixTokenPairByERC721            = []byte{prefixTokenPairByERC721}
+	KeyPrefixTokenPairByClass             = []byte{prefixTokenPairByClass}
+	KeyPrefixERC721TokenIDByNativeTokenID = []byte{prefixERC721TokenIDByNativeTokenID}
+	KeyPrefixNativeTokenIDByERC721TokenID = []byte{prefixNativeTokenIDByERC721TokenID}
+)
+
 // ERC721 Method Names
 const (
 	ERC721MethodMintNFT           = "mint"
