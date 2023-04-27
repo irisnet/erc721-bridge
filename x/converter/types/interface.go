@@ -37,6 +37,8 @@ type NFTKeeper interface {
 	GetOwner(ctx sdk.Context, classID string, tokenID string) sdk.AccAddress
 	HasClass(ctx sdk.Context, classID string) bool
 	GetClass(ctx sdk.Context, classID string) (Class, bool)
+	GetNft(ctx sdk.Context, classID string, tokenID string) (NFT, bool)
+	HasNft(ctx sdk.Context, classID string, tokenID string) bool
 }
 
 // Class defines the interface specifications of collection that can be transferred across chains
@@ -44,6 +46,8 @@ type Class interface {
 	GetID() string
 	GetURI() string
 	GetData() string
+	GetName() string
+	GetSymbol() string
 }
 
 // NFT defines the interface specification of nft that can be transferred across chains
