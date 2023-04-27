@@ -171,6 +171,33 @@ func (k Keeper) ClassData(
 	return classData, nil
 }
 
+// SupportsInterface checks if the contract supports an interface
+func (k Keeper) SupportsInterface(ctx sdk.Context,
+	abi abi.ABI,
+	contract common.Address,
+	interfaceId [4]byte,
+) (bool, error) {
+	res, err := k.CallEVM(ctx,
+		abi,
+		types.ModuleAddress, contract, false,
+		types.ERC165MethodSupportsInterface, interfaceId)
+	if err != nil {
+		return false, err
+	}
+
+	unpacked, err := abi.Unpack("classData", res.Ret)
+	if err != nil || len(unpacked) == 0 {
+		return false, err
+	}
+
+	success, ok := unpacked[0].(bool)
+	if !ok {
+		return false, err
+	}
+
+	return success, nil
+}
+
 // ClassURI queries an account's class URI for a given ERC721 contract
 func (k Keeper) ClassURI(
 	ctx sdk.Context,

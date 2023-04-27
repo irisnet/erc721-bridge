@@ -25,15 +25,23 @@ func init() {
 
 // ERC721 Method Names
 const (
-	ERC721MethodMintNFT      = "mint"
-	ERC721MethodBurnNFT      = "burn"
-	ERC721MethodOwnerOf      = "ownerOf"
-	ERC721MethodName         = "name"
-	ERC721MethodSymbol       = "symbol"
-	ERC721MethodClassData    = "classData"
-	ERC721MethodClassURI     = "classURI"
-	ERC721MethodTransferFrom = "transferFrom"
-	ERC721MethodTokenURI     = "tokenURI"
-	ERC721MethodTokenData    = "tokenData"
-	ERC721MethodSetClass     = "setClass"
+	ERC721MethodMintNFT           = "mint"
+	ERC721MethodBurnNFT           = "burn"
+	ERC721MethodOwnerOf           = "ownerOf"
+	ERC721MethodName              = "name"
+	ERC721MethodSymbol            = "symbol"
+	ERC721MethodClassData         = "classData"
+	ERC721MethodClassURI          = "classURI"
+	ERC721MethodTransferFrom      = "transferFrom"
+	ERC721MethodTokenURI          = "tokenURI"
+	ERC721MethodTokenData         = "tokenData"
+	ERC721MethodSetClass          = "setClass"
+	ERC165MethodSupportsInterface = "supportsInterface"
+)
+
+// Supported Interface Id
+const (
+	IERC721BaseInterfaceId               = "0x93254542"
+	IERC721CommonInterfaceId             = "0xff2625a9"
+	IERC721PresetMinterPauserInterfaceId = "0x0c3eb79b"
 )

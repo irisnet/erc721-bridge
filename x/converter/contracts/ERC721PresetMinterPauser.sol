@@ -2,24 +2,22 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
+
+import "./IERC721Interface.sol";
 
 contract ERC721PresetMinterPauser is
     Context,
     AccessControlEnumerable,
-    ERC721Pausable,
-    ERC721URIStorage
+    ERC721Pausable
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
     string private _baseTokenURI;
-    string private _classURI;
     string private _classData;
 
     // Optional mapping for token URIs
@@ -38,10 +36,8 @@ contract ERC721PresetMinterPauser is
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
-        string memory classURI_,
         string memory classData_
     ) ERC721(name, symbol) {
-        _classURI = classURI_;
         _classData = classData_;
 
         _baseTokenURI = baseTokenURI;
@@ -98,7 +94,7 @@ contract ERC721PresetMinterPauser is
     }
 
     function setClass(
-        string memory classURI_,
+        string memory baseTokenURI_,
         string memory classData_
     ) public virtual {
         require(
@@ -106,7 +102,7 @@ contract ERC721PresetMinterPauser is
             "ERC721PresetMinterPauserAutoId: must have admin role to set class data"
         );
         _classData = classData_;
-        _classURI = classURI_;
+        _baseTokenURI = baseTokenURI_;
     }
 
     /**
@@ -149,13 +145,7 @@ contract ERC721PresetMinterPauser is
      */
     function tokenURI(
         uint256 tokenId
-    )
-    public
-    view
-    virtual
-    override(ERC721, ERC721URIStorage)
-    returns (string memory)
-    {
+    ) public view virtual override(ERC721) returns (string memory) {
         return super.tokenURI(tokenId);
     }
 
@@ -178,10 +168,10 @@ contract ERC721PresetMinterPauser is
     }
 
     /**
-     * @dev Gets class URI.
+     * @dev Gets base URI.
      */
-    function classURI() public view virtual returns (string memory) {
-        return _classURI;
+    function baseURI() public view virtual returns (string memory) {
+        return _baseURI();
     }
 
     /**
@@ -202,19 +192,37 @@ contract ERC721PresetMinterPauser is
         _tokenDatas[tokenId] = _tokenData;
     }
 
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 firstTokenId,
-        uint256 batchSize
-    ) internal virtual override(ERC721, ERC721Pausable) {
-        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+    /**
+     * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
+     *
+     * Requirements:
+     *
+     * - `tokenId` must exist.
+     */
+    function _setTokenURI(
+        uint256 tokenId,
+        string memory _tokenURI
+    ) internal virtual {
+        require(
+            _exists(tokenId),
+            "ERC721URIStorage: URI set of nonexistent token"
+        );
+        _tokenURIs[tokenId] = _tokenURI;
     }
 
-    function _burn(
-        uint256 tokenId
-    ) internal virtual override(ERC721, ERC721URIStorage) {
+    /**
+     * @dev Burns `tokenId`. See {ERC721-_burn}.
+     *
+     * Requirements:
+     *
+     * - The caller must own `tokenId` or be an approved operator.
+     */
+    function _burn(uint256 tokenId) internal virtual override(ERC721) {
         super._burn(tokenId);
+
+        if (bytes(_tokenURIs[tokenId]).length != 0) {
+            delete _tokenURIs[tokenId];
+        }
 
         if (bytes(_tokenDatas[tokenId]).length != 0) {
             delete _tokenDatas[tokenId];
@@ -233,6 +241,10 @@ contract ERC721PresetMinterPauser is
     override(AccessControlEnumerable, ERC721)
     returns (bool)
     {
-        return super.supportsInterface(interfaceId);
+        return
+        interfaceId == type(IERC721Base).interfaceId ||
+        interfaceId == type(IERC721Common).interfaceId ||
+        interfaceId == type(IERC721PresetMinterPauser).interfaceId ||
+        super.supportsInterface(interfaceId);
     }
 }
