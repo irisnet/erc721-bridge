@@ -11,7 +11,8 @@ import "./IERC721Interface.sol";
 contract ERC721PresetMinterPauser is
     Context,
     AccessControlEnumerable,
-    ERC721Pausable
+    ERC721Pausable,
+    IERC721PresetMinterPauser
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -242,8 +243,6 @@ contract ERC721PresetMinterPauser is
     returns (bool)
     {
         return
-        interfaceId == type(IERC721Base).interfaceId ||
-        interfaceId == type(IERC721Common).interfaceId ||
         interfaceId == type(IERC721PresetMinterPauser).interfaceId ||
         super.supportsInterface(interfaceId);
     }

@@ -39,9 +39,9 @@ const (
 	ERC165MethodSupportsInterface = "supportsInterface"
 )
 
-// Supported Interface Id
+// Supported Interface ID
 const (
-	IERC721BaseInterfaceId               = "0x93254542"
-	IERC721CommonInterfaceId             = "0xff2625a9"
-	IERC721PresetMinterPauserInterfaceId = "0x0c3eb79b"
+	IERC721InterfaceId                   = "0x80ac58cd"
+	IERC721MeatadataInterfaceId          = "0x5b5e139f"
+	IERC721PresetMinterPauserInterfaceId = "0x9f1bf2d9"
 )
