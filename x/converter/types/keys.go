@@ -25,16 +25,15 @@ func init() {
 
 // ERC721 Method Names
 const (
-	ERC721MethodMintNFT   = "mintNft"
-	ERC721MethodBurnNFT   = "burnNft"
-	ERC721MethodOwnerOf   = "ownerOf"
-	ERC721MethodName      = "name"
-	ERC721MethodSymbol    = "symbol"
-	ERC721MethodClassData = "classData"
-	ERC721MethodClassURI  = "classURI"
-	ERC721MethodBalanceOf = "balanceOf"
-	ERC721MethodTransfer  = "transferNft"
-	ERC721MethodTokenURI  = "tokenURI"
-	ERC721MethodTokenData = "tokenData"
-	ERC721MethodSetClass  = "setClass"
+	ERC721MethodMintNFT      = "mint"
+	ERC721MethodBurnNFT      = "burn"
+	ERC721MethodOwnerOf      = "ownerOf"
+	ERC721MethodName         = "name"
+	ERC721MethodSymbol       = "symbol"
+	ERC721MethodClassData    = "classData"
+	ERC721MethodClassURI     = "classURI"
+	ERC721MethodTransferFrom = "transferFrom"
+	ERC721MethodTokenURI     = "tokenURI"
+	ERC721MethodTokenData    = "tokenData"
+	ERC721MethodSetClass     = "setClass"
 )

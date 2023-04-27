@@ -42,8 +42,8 @@ func (k Keeper) DeployERC721Contract(ctx sdk.Context,
 	return contractAddr, nil
 }
 
-// MintNft mints an NFT
-func (k Keeper) MintNft(ctx sdk.Context,
+// Mint mints an NFT
+func (k Keeper) Mint(ctx sdk.Context,
 	contract common.Address,
 	to common.Address,
 	tokenId big.Int,
@@ -61,8 +61,8 @@ func (k Keeper) MintNft(ctx sdk.Context,
 	return nil
 }
 
-// BurnNft burns an NFT
-func (k Keeper) BurnNft(ctx sdk.Context,
+// Burn burns an NFT
+func (k Keeper) Burn(ctx sdk.Context,
 	contract common.Address,
 	tokenId big.Int,
 ) error {
@@ -71,6 +71,24 @@ func (k Keeper) BurnNft(ctx sdk.Context,
 		erc721,
 		types.ModuleAddress, contract, true,
 		types.ERC721MethodBurnNFT, tokenId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// TransferFrom transfers an NFT
+func (k Keeper) TransferFrom(ctx sdk.Context,
+	contract common.Address,
+	from common.Address,
+	to common.Address,
+	tokenId big.Int,
+) error {
+	erc721 := contracts.ERC721PresetMinterPauserContract.ABI
+	_, err := k.CallEVM(ctx,
+		erc721,
+		types.ModuleAddress, contract, true,
+		types.ERC721MethodTransferFrom, from, to, tokenId)
 	if err != nil {
 		return err
 	}
