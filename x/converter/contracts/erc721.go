@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	//go:embed compiled_contracts/ERC721PresetMinterPauserAutoId.json
+	//go:embed compiled_contracts/ERC721PresetMinterPauser.json
 	ERC721PresetMinterPauserJSON []byte //nolint: golint
 
 	// ERC721PresetMinterPauserContract is the compiled erc721 contract
