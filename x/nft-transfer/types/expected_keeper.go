@@ -17,11 +17,5 @@ type ConverterKeeper interface {
 
 	ERC721ToNFT(ctx sdk.Context, contract common.Address, erc721TokenId *big.Int) (string, bool)
 
-	NFTToERC721(ctx sdk.Context, classId string, nftId string) (*big.Int, bool)
-
-	MapClassAndContract(ctx sdk.Context, classId string, contract common.Address) error
-
-	MapERC721AndNFT(ctx sdk.Context, classId string, nftId string, contract common.Address, erc721TokenId *big.Int) error
-
 	DeleteTokenMapping(ctx sdk.Context, classId string, nftId []string) error
 }

@@ -83,8 +83,8 @@ github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6r
 github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d h1:xDfNPAt8lFiC1UJrqV3uuy861HCTo708pDMbjHHdCas=
 github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 h1:41iFGWnSlI2gVpmOtVTJZNodLdLQLn/KsJqFvXwnd/s=
 github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
-github.com/bianjieai/nft-transfer v1.1.2-beta h1:/ioB1H2PE1Atl29MAzeq/Guzs2r7E1OxCCM4WvdwXp0=
-github.com/bianjieai/nft-transfer v1.1.2-beta/go.mod h1:0XSwOqmJlrL0NQvQj8imILddnqDZ7alRrgfwcsjRP2k=
+github.com/bianjieai/nft-transfer v1.1.1-beta.0.20230420064251-695f56a8d352 h1:zkpobkOiJWCKrJa4zlAx0YZsdlGsrPkcXYyCbZ+E+wA=
+github.com/bianjieai/nft-transfer v1.1.1-beta.0.20230420064251-695f56a8d352/go.mod h1:bZ9rO7aUT04ZBEO5I4/fi7rbu5Z1LDxg2A2+m9+eToI=
 github.com/btcsuite/btcd v0.22.1 h1:CnwP9LM/M9xuRrGSCGeMVs9iv09uMqwsVX7EeIpgV2c=
 github.com/btcsuite/btcd/btcec/v2 v2.3.2 h1:5n0X6hX0Zk+6omWcihdYvdAlGf2DfasC0GMf7DClJ3U=
 github.com/btcsuite/btcd/btcec/v2 v2.3.2/go.mod h1:zYzJ8etWJQIv1Ogk7OzpWjowwOdXY1W/17j2MW85J04=

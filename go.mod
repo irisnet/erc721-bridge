@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cosmossdk.io/errors v1.0.0-beta.7
-	github.com/bianjieai/nft-transfer v1.1.2-beta
+	github.com/bianjieai/nft-transfer v1.1.1-beta.0.20230420064251-695f56a8d352
 	github.com/cosmos/cosmos-sdk v0.46.9
 	github.com/cosmos/ibc-go/v5 v5.2.0
 	github.com/ethereum/go-ethereum v1.10.26

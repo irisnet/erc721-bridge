@@ -65,6 +65,12 @@ func (k Keeper) Transfer(goCtx context.Context, msg *nfttransfertypes.MsgTransfe
 	return k.ics721Keeper.Transfer(goCtx, msg)
 }
 
+// UpdateParams defines a governance operation for updating the nft-transfer module parameters.
+// The authority is defined in the keeper.
+func (k Keeper) UpdateParams(goCtx context.Context, msg *nfttransfertypes.MsgUpdateParams) (*nfttransfertypes.MsgUpdateParamsResponse, error) {
+	return k.ics721Keeper.UpdateParams(goCtx, msg)
+}
+
 func (k Keeper) ISC721Keeper() nfttransferkeeper.Keeper {
 	return k.ics721Keeper
 }
