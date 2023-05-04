@@ -18,11 +18,11 @@ const (
 )
 
 // NewConvertNFTMsg creates a new instance of MsgConvertNFT
-func NewConvertNFTMsg(classId string, tokenId string, receiver, sender sdk.AccAddress) *MsgConvertNFT {
+func NewConvertNFTMsg(classId string, tokenId string, receiver common.Address, sender sdk.AccAddress) *MsgConvertNFT {
 	return &MsgConvertNFT{
 		ClassId:  classId,
 		TokenId:  tokenId,
-		Receiver: receiver.String(),
+		Receiver: receiver.Hex(),
 		Sender:   sender.String(),
 	}
 }
@@ -35,13 +35,12 @@ func (msg MsgConvertNFT) Type() string { return TypeMsgConvertNFT }
 
 // ValidateBasic runs stateless checks on the message
 func (msg MsgConvertNFT) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.Receiver)
+	_, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return err
 	}
-	_, err = sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		return err
+	if !common.IsHexAddress(msg.Receiver) {
+		return errorsmod.Wrapf(errortypes.ErrInvalidAddress, "invalid receiver hex address %s", msg.Receiver)
 	}
 	return nil
 }
@@ -82,9 +81,8 @@ func (msg MsgConvertERC721) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	_, err = sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		return err
+	if !common.IsHexAddress(msg.Sender) {
+		return errorsmod.Wrapf(errortypes.ErrInvalidAddress, "invalid sender hex address %s", msg.Sender)
 	}
 	return nil
 }

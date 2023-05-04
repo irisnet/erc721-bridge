@@ -37,8 +37,8 @@ var (
 	KeyPrefixTokenPair                    = []byte{prefixTokenPair}
 	KeyPrefixTokenPairByERC721            = []byte{prefixTokenPairByERC721}
 	KeyPrefixTokenPairByClass             = []byte{prefixTokenPairByClass}
-	KeyPrefixERC721TokenIDByNativeTokenID = []byte{prefixERC721TokenIDByNativeTokenID}
 	KeyPrefixNativeTokenIDByERC721TokenID = []byte{prefixNativeTokenIDByERC721TokenID}
+	KeyPrefixERC721TokenIDByNativeTokenID = []byte{prefixERC721TokenIDByNativeTokenID}
 )
 
 // ERC721 Method Names
@@ -63,3 +63,7 @@ const (
 	IERC721MeatadataInterfaceId          = "0x5b5e139f"
 	IERC721PresetMinterPauserInterfaceId = "0x9f1bf2d9"
 )
+
+func KeyTokenIdPair(classId, nftId string) []byte {
+	return append(KeyPrefixTokenPair, []byte(classId+"/"+nftId)...)
+}

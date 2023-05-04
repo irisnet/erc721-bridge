@@ -45,16 +45,21 @@ func NewConvertNft() *cobra.Command {
 			}
 
 			sender := cliCtx.GetFromAddress()
-
-			receiver := cliCtx.GetFromAddress()
+			var receiver string
 			if len(args) == 3 {
-				receiver, err = sdk.AccAddressFromBech32(args[2])
-				if err != nil {
-					return err
+				receiver = args[2]
+				if err = etherminttypes.ValidateAddress(receiver); err != nil {
+					return fmt.Errorf("invalid receiver hex address %w", err)
 				}
+			} else {
+				receiver = common.BytesToAddress(sender).Hex()
 			}
-
-			msg := types.NewConvertNFTMsg(args[0], args[1], sender, receiver)
+			msg := &types.MsgConvertNFT{
+				ClassId:  args[0],
+				TokenId:  args[1],
+				Receiver: receiver,
+				Sender:   sender.String(),
+			}
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

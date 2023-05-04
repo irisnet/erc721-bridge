@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -25,6 +26,7 @@ type EVMKeeper interface {
 	GetAccountWithoutBalance(ctx sdk.Context, addr common.Address) *statedb.Account
 	EstimateGas(c context.Context, req *evmtypes.EthCallRequest) (*evmtypes.EstimateGasResponse, error)
 	ApplyMessage(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool) (*evmtypes.MsgEthereumTxResponse, error)
+	ChainID() *big.Int
 }
 
 // NFTKeeper defines the expected interface needed to retrieve the IRSMod NFT denom.
@@ -37,8 +39,7 @@ type NFTKeeper interface {
 	GetOwner(ctx sdk.Context, classID string, tokenID string) sdk.AccAddress
 	HasClass(ctx sdk.Context, classID string) bool
 	GetClass(ctx sdk.Context, classID string) (Class, bool)
-	GetNft(ctx sdk.Context, classID string, tokenID string) (NFT, bool)
-	HasNft(ctx sdk.Context, classID string, tokenID string) bool
+	GetNFT(ctx sdk.Context, classID string, tokenID string) (NFT, bool)
 }
 
 // Class defines the interface specifications of collection that can be transferred across chains

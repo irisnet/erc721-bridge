@@ -22,8 +22,8 @@ type Keeper struct {
 }
 
 func NewKeeper(
-	storeKey storetypes.StoreKey,
 	cdc codec.BinaryCodec,
+	storeKey storetypes.StoreKey,
 	ak types.AccountKeeper,
 	evmKeeper types.EVMKeeper,
 	nftKeeper types.NFTKeeper,
