@@ -23,8 +23,8 @@ var (
 
 const (
 	// Amino names
-	convertERC721Name = "irismod/erc721-converter/MsgConvertERC721"
-	convertNativeName = "irismod/erc721-converter/MsgConvertNFT"
+	convertERC721Name = "erc721-bridge/converter/MsgConvertERC721"
+	convertNativeName = "erc721-bridge/converter/MsgConvertNFT"
 )
 
 // NOTE: This is required for the GetSignBytes function
