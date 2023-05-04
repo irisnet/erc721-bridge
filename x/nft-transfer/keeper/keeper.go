@@ -1,21 +1,22 @@
 package keeper
 
 import (
-	nfttransferkeeper "github.com/bianjieai/nft-transfer/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/ethereum/go-ethereum/common"
+
+	nfttransferkeeper "github.com/bianjieai/nft-transfer/keeper"
 
 	"github.com/irisnet/erc721-bridge/x/nft-transfer/types"
 )
 
 type Keeper struct {
-	erc721Port      string
 	ics721Keeper    nfttransferkeeper.Keeper
 	converterKeeper types.ConverterKeeper
 }
 
-func (k Keeper) IsERC721Port(port string) bool {
-	return k.erc721Port == port
+func NewKeeper(ics721Keeper nfttransferkeeper.Keeper, converterKeeper types.ConverterKeeper) Keeper {
+	return Keeper{ics721Keeper, converterKeeper}
 }
 
 func (k Keeper) ClassToContract(ctx sdk.Context, classId string) (common.Address, bool) {

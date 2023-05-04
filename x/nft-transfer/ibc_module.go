@@ -3,11 +3,12 @@ package bridge
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	nfttransfer "github.com/bianjieai/nft-transfer"
-	"github.com/bianjieai/nft-transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v5/modules/core/exported"
+
+	nfttransfer "github.com/bianjieai/nft-transfer"
+	"github.com/bianjieai/nft-transfer/types"
 
 	"github.com/irisnet/erc721-bridge/x/nft-transfer/keeper"
 )

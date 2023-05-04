@@ -1,8 +1,9 @@
 package bridge
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/spf13/cobra"
+
+	"github.com/cosmos/cosmos-sdk/types/module"
 
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
 
