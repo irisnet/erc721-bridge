@@ -58,7 +58,10 @@ func (k Keeper) SaveRegisteredERC721(ctx sdk.Context, contract common.Address) (
 	}
 	// Create Data
 	// Create Native Class
-	k.nftKeeper.SaveClass(ctx, classId, erc721MetaData.Name, erc721MetaData.Symbol)
+	if err := k.nftKeeper.SaveClass(ctx, classId, erc721MetaData.Name, erc721MetaData.Symbol); err != nil {
+		return "", errorsmod.Wrapf(types.ErrSaveClass,
+			"failed to save class %s, contract address %s", classId, contract.String())
+	}
 
 	pair := types.NewTokenPair(contract, classId, types.OWNER_EXTERNAL)
 	k.SetTokenPair(ctx, pair)

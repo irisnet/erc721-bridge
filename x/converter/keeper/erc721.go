@@ -65,7 +65,7 @@ func (k Keeper) Burn(ctx sdk.Context,
 	contract common.Address,
 	erc721Abi abi.ABI,
 	sender common.Address,
-	tokenId big.Int,
+	tokenId *big.Int,
 ) error {
 	_, err := k.CallEVM(ctx,
 		erc721Abi,
@@ -116,8 +116,10 @@ func (k Keeper) QueryERC721(
 ) (types.ERC721Data, error) {
 
 	var (
-		nameRes   types.ERC721StringResponse
-		symbolRes types.ERC721StringResponse
+		nameRes      types.ERC721StringResponse
+		symbolRes    types.ERC721StringResponse
+		classURIRes  types.ERC721StringResponse
+		classDataRes types.ERC721StringResponse
 	)
 
 	// Name
@@ -141,6 +143,32 @@ func (k Keeper) QueryERC721(
 	}
 
 	if err := erc721Abi.UnpackIntoInterface(&symbolRes, "symbol", res.Ret); err != nil {
+		return types.ERC721Data{}, errorsmod.Wrapf(
+			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
+		)
+	}
+
+	// URI
+	res, err = k.CallEVM(ctx,
+		erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodClassURI)
+	if err != nil {
+		return types.ERC721Data{}, err
+	}
+
+	if err := erc721Abi.UnpackIntoInterface(&classURIRes, "baseURI", res.Ret); err != nil {
+		return types.ERC721Data{}, errorsmod.Wrapf(
+			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
+		)
+	}
+
+	// Class Data
+	res, err = k.CallEVM(ctx,
+		erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodClassData)
+	if err != nil {
+		return types.ERC721Data{}, err
+	}
+	//
+	if err := erc721Abi.UnpackIntoInterface(&classDataRes, "classData", res.Ret); err != nil {
 		return types.ERC721Data{}, errorsmod.Wrapf(
 			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
 		)
@@ -255,8 +283,8 @@ func (k Keeper) TokenData(
 // OwnerOf queries an account's owner for a given ERC721 contract
 func (k Keeper) OwnerOf(
 	ctx sdk.Context,
-	contract common.Address,
 	erc721Abi abi.ABI,
+	contract common.Address,
 	tokenID *big.Int,
 ) (common.Address, error) {
 	res, err := k.CallEVM(ctx,

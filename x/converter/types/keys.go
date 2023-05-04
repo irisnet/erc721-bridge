@@ -49,7 +49,7 @@ const (
 	ERC721MethodName              = "name"
 	ERC721MethodSymbol            = "symbol"
 	ERC721MethodClassData         = "classData"
-	ERC721MethodClassURI          = "classURI"
+	ERC721MethodClassURI          = "baseURI"
 	ERC721MethodTransferFrom      = "transferFrom"
 	ERC721MethodTokenURI          = "tokenURI"
 	ERC721MethodTokenData         = "tokenData"

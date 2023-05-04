@@ -54,7 +54,7 @@ func (k Keeper) ConvertNFTMint(
 	}
 
 	// Check expected receiver nft owner after mint
-	owner, err := k.OwnerOf(ctx, contract, erc721Abi, newTokenId)
+	owner, err := k.OwnerOf(ctx, erc721Abi, contract, newTokenId)
 	if err != nil {
 		return nil, errorsmod.Wrap(
 			types.ErrERC721TokenOwner, "erc721 token owner check failed")
@@ -68,8 +68,8 @@ func (k Keeper) ConvertNFTMint(
 	return newTokenId, nil
 }
 
-// ConvertERC721Burn converts a erc721 token to an native Cosmos token
-func (k Keeper) ConvertERC721Burn(ctx sdk.Context,
+// ConvertNFTBurn converts a erc721 token to an native Cosmos token
+func (k Keeper) ConvertNFTBurn(ctx sdk.Context,
 	pair types.TokenPair,
 	msg *types.MsgConvertNFT,
 	receiver common.Address,
@@ -101,7 +101,7 @@ func (k Keeper) ConvertERC721Burn(ctx sdk.Context,
 			"erc721 token %s transfer failed", newTokenId)
 	}
 	// Check expected receiver nft owner after mint
-	owner, err := k.OwnerOf(ctx, contract, erc721Abi, newTokenId)
+	owner, err := k.OwnerOf(ctx, erc721Abi, contract, newTokenId)
 	if err != nil {
 		return nil, errorsmod.Wrap(
 			types.ErrERC721TokenOwner, "erc721 token owner check failed")
@@ -114,4 +114,96 @@ func (k Keeper) ConvertERC721Burn(ctx sdk.Context,
 
 	return newTokenId, nil
 
+}
+
+// ConvertERC721Mint converts a erc721 token to an native Cosmos token
+func (k Keeper) ConvertERC721Mint(ctx sdk.Context,
+	pair types.TokenPair,
+	msg *types.MsgConvertERC721,
+	receiver sdk.AccAddress,
+	sender common.Address,
+) (string, error) {
+
+	contract := pair.GetERC721Contract()
+	erc721Abi := contracts.ERC721PresetMinterPauserContract.ABI
+
+	// Check ERC721 nft owner
+	erc721NFTOwner, err := k.OwnerOf(ctx, erc721Abi, contract, msg.TokenId.BigInt())
+	if err != nil || erc721NFTOwner != sender {
+		return "", errorsmod.Wrapf(
+			types.ErrERC721TokenOwner, "erc721 nft %s owner check failed", msg.TokenId)
+	}
+
+	// transfer erc721 token to module account
+	if err := k.TransferFrom(ctx,
+		contract, erc721Abi, sender, types.ModuleAddress, msg.TokenId.BigInt()); err != nil {
+		return "", errorsmod.Wrapf(types.ErrERC721TokenTransfer,
+			"erc721 token %s transfer failed", msg.TokenId)
+	}
+
+	// Check expected receiver nft owner after mint
+	tokenURI, err := k.TokenURI(ctx, erc721Abi, contract, msg.TokenId.BigInt())
+	if err != nil {
+		return "", errorsmod.Wrapf(types.ErrERC721TokenURI,
+			"erc721 token %s tokenURI failed", msg.TokenId)
+	}
+
+	tokenData, err := k.TokenData(ctx, erc721Abi, contract, msg.TokenId.BigInt())
+	if err != nil {
+		return "", errorsmod.Wrapf(types.ErrERC721TokenData,
+			"erc721 token %s tokenURI failed", msg.TokenId)
+	}
+
+	classId := pair.GetClassId()
+	if err := k.nftKeeper.Mint(ctx,
+		classId, msg.TokenId.String(), tokenURI, tokenData, receiver); err != nil {
+		return "", errorsmod.Wrapf(types.ErrNativeNFTMint,
+			"native nft %s mint failed", msg.TokenId,
+		)
+	}
+
+	// Check expected receiver nft owner after mint
+	newContractNFTOwner, err := k.OwnerOf(ctx, erc721Abi, contract, msg.TokenId.BigInt())
+	if err != nil || receiver.Equals(sdk.AccAddress(newContractNFTOwner.Bytes())) {
+		return "", errorsmod.Wrap(
+			types.ErrERC721TokenOwner, "erc721 token owner check failed")
+	}
+
+	return msg.TokenId.String(), nil
+}
+
+// ConvertERC721Burn converts a native Cosmos token to an erc721 token
+func (k Keeper) ConvertERC721Burn(ctx sdk.Context,
+	pair types.TokenPair,
+	msg *types.MsgConvertERC721,
+	receiver sdk.AccAddress,
+	sender common.Address,
+) (string, error) {
+
+	contract := pair.GetERC721Contract()
+	erc721Abi := contracts.ERC721PresetMinterPauserContract.ABI
+
+	// Check ERC721 nft owner
+	erc721NFTOwner, err := k.OwnerOf(ctx, erc721Abi, contract, msg.TokenId.BigInt())
+	if err != nil || erc721NFTOwner != sender {
+		return "", errorsmod.Wrapf(
+			types.ErrERC721TokenOwner, "erc721 nft %s owner check failed", msg.TokenId)
+	}
+
+	// transfer native nft to receiver from module account
+	if err := k.nftKeeper.Transfer(ctx,
+		pair.GetClassId(), msg.TokenId.String(), "", receiver); err != nil {
+		return "", errorsmod.Wrapf(
+			types.ErrNativeNFTTransfer, "native nft %s transfer failed", msg.TokenId)
+	}
+
+	// burn ERC721 token
+	if err := k.Burn(ctx, contract, erc721Abi, sender, msg.TokenId.BigInt()); err != nil {
+		return "", errorsmod.Wrapf(
+			types.ErrERC721Brun, "erc721 token %s burn failed", msg.TokenId)
+	}
+
+	// todo: check nft is not exist
+
+	return msg.TokenId.String(), nil
 }

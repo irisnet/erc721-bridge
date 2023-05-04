@@ -6,29 +6,33 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
 
-// ConvertNFTValidator is the validator for ConvertNFT
-func (k Keeper) ConvertNFTValidator(
+// ConvertValidator is the validator for Convert
+func (k Keeper) ConvertValidator(
 	ctx sdk.Context,
-	sender sdk.AccAddress,
-	classId string,
-	nftId string,
+	sender, receiver sdk.AccAddress,
+	token string,
 ) (types.TokenPair, error) {
 
-	id := k.GetTokenPairID(ctx, classId)
+	id := k.GetTokenPairID(ctx, token)
 	if len(id) == 0 {
 		return types.TokenPair{}, errorsmod.Wrapf(
-			types.ErrTokenPairNotFound, "class '%s' not registered by id", classId,
+			types.ErrTokenPairNotFound, "class '%s' not registered by id", token,
 		)
 	}
 	pair, found := k.GetTokenPair(ctx, id)
 	if !found {
 		return types.TokenPair{}, errorsmod.Wrapf(
-			types.ErrTokenPairNotFound, "class '%s' not registered", classId,
+			types.ErrTokenPairNotFound, "class '%s' not registered", token,
 		)
 	}
 	if !pair.Enabled {
 		return types.TokenPair{}, errorsmod.Wrapf(
-			types.ErrERC721TokenPairDisabled, "minting token '%s' is not enabled by governance", classId,
+			types.ErrERC721TokenPairDisabled, "minting token '%s' is not enabled by governance", token,
+		)
+	}
+	if !sender.Equals(receiver) {
+		return types.TokenPair{}, errorsmod.Wrapf(
+			types.ErrUnauthorized, "sender must be equal to receiver", token,
 		)
 	}
 
