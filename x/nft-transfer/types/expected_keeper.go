@@ -9,28 +9,18 @@ import (
 
 type ConverterKeeper interface {
 	ContractToClass(ctx sdk.Context, contract common.Address) (string, bool)
-	HasContract(ctx sdk.Context, contract common.Address) bool
+
 	ClassToContract(ctx sdk.Context, classId string) (common.Address, bool)
 
-	ERC721ToNFT(ctx sdk.Context,
-		contract common.Address,
-		erc721TokenId *big.Int,
-	) (string, bool)
+	HasContract(ctx sdk.Context, contract common.Address) bool
 
-	NFTToERC721(ctx sdk.Context,
-		classId string,
-		nftId string,
-	) (*big.Int, bool)
+	ERC721ToNFT(ctx sdk.Context, contract common.Address, erc721TokenId *big.Int) (string, bool)
 
-	MapClassAndContract(ctx sdk.Context,
-		classId string,
-		contract common.Address,
-	) error
+	NFTToERC721(ctx sdk.Context, classId string, nftId string) (*big.Int, bool)
 
-	MapERC721AndNFT(ctx sdk.Context,
-		classId string,
-		nftId string,
-		contract common.Address,
-		erc721TokenId *big.Int,
-	) error
+	MapClassAndContract(ctx sdk.Context, classId string, contract common.Address) error
+
+	MapERC721AndNFT(ctx sdk.Context, classId string, nftId string, contract common.Address, erc721TokenId *big.Int) error
+
+	DeleteTokenMapping(ctx sdk.Context, classId string, nftId []string) error
 }

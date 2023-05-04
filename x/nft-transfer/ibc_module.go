@@ -2,13 +2,14 @@ package bridge
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	nfttransfer "github.com/bianjieai/nft-transfer"
 	"github.com/bianjieai/nft-transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v5/modules/core/exported"
+
+	"github.com/irisnet/erc721-bridge/x/nft-transfer/keeper"
 )
 
 var (
@@ -18,11 +19,12 @@ var (
 // IBCModule implements the ICS26 interface for transfer given the transfer keeper.
 type IBCModule struct {
 	nfttransfer.IBCModule
+	k keeper.Keeper
 }
 
 // NewIBCModule creates a new IBCModule given the keeper
-func NewIBCModule(app nfttransfer.IBCModule) IBCModule {
-	return IBCModule{app}
+func NewIBCModule(app nfttransfer.IBCModule, k keeper.Keeper) IBCModule {
+	return IBCModule{app, k}
 }
 
 // OnRecvPacket implements the IBCModule interface. A successful acknowledgement
@@ -47,36 +49,45 @@ func (im IBCModule) OnAcknowledgementPacket(
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
 ) error {
+	if err := im.IBCModule.OnAcknowledgementPacket(ctx,
+		packet, acknowledgement, relayer); err != nil {
+		return err
+	}
+
 	var ack channeltypes.Acknowledgement
 	if err := types.ModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest,
-			"cannot unmarshal ICS-721 transfer packet acknowledgement: %v", err)
-	}
-	switch resp := ack.Response.(type) {
-	case *channeltypes.Acknowledgement_Result:
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypePacket,
-				sdk.NewAttribute(types.AttributeKeyAckSuccess, string(resp.Result)),
-			),
+		return im.IBCModule.OnAcknowledgementPacket(ctx,
+			packet, acknowledgement, relayer,
 		)
-	case *channeltypes.Acknowledgement_Error:
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				types.EventTypePacket,
-				sdk.NewAttribute(types.AttributeKeyAckError, resp.Error),
-			),
+	}
+	// If the cross-chain fails, the token mapping cannot be deleted
+	if !ack.Success() {
+		return nil
+	}
+
+	var data types.NonFungibleTokenPacketData
+	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
+		return im.IBCModule.OnAcknowledgementPacket(ctx,
+			packet, acknowledgement, relayer,
 		)
 	}
 
-	return nil
-}
+	classTrace := types.ParseClassTrace(data.ClassId)
+	ibcClassId := classTrace.IBCClassID()
 
-// OnTimeoutPacket implements the IBCModule interface
-func (im IBCModule) OnTimeoutPacket(
-	ctx sdk.Context,
-	packet channeltypes.Packet,
-	relayer sdk.AccAddress,
-) error {
+	// If it is far away from the original chain, the token mapping cannot be deleted
+	if types.IsAwayFromOrigin(packet.GetSourcePort(), packet.GetSourceChannel(), data.ClassId) {
+		return nil
+	}
+
+	// If it is back to the original chain, delete the token mapping
+	_, ok := im.k.ClassToContract(ctx, ibcClassId)
+	// If the class mapped to the contract is not found, it may be the erc721 token of the original chain transferred
+	if !ok {
+		return nil
+	}
+
+	// The failure to delete the token mapping does not affect the cross-chain logic, so ignore the error
+	_ = im.k.DeleteTokenMapping(ctx, ibcClassId, data.TokenIds)
 	return nil
 }
