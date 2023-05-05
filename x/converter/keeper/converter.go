@@ -67,6 +67,7 @@ func (k Keeper) ConvertNFTMint(
 
 	// Store the mapping between nftId and tokenId
 	k.SetNativeNftIdMap(ctx, msg.ClassId, msg.TokenId, newTokenId)
+	k.SetERC721TokenIdMap(ctx, pair.GetERC721Contract(), newTokenId, msg.TokenId)
 
 	return newTokenId, nil
 }
@@ -117,6 +118,10 @@ func (k Keeper) ConvertNFTBurn(ctx sdk.Context,
 		return nil, errorsmod.Wrap(
 			types.ErrERC721TokenOwner, "erc721 token owner check failed")
 	}
+
+	// delete token id pair
+	k.DeleteERC721TokenIdMap(ctx, contract, erc721TokenId)
+	k.DeleteNativeNftIdMap(ctx, pair.GetClassId(), msg.TokenId)
 
 	return erc721TokenId, nil
 
@@ -178,8 +183,9 @@ func (k Keeper) ConvertERC721Mint(ctx sdk.Context,
 			types.ErrERC721TokenOwner, "erc721 token owner check failed")
 	}
 
-	// todo
-	// k.SetNativeNFTTokenID(ctx, classId, msg.TokenId)
+	// Store the mapping between nftId and tokenId
+	k.SetERC721TokenIdMap(ctx, pair.GetERC721Contract(), msg.TokenId.BigInt(), tokenId)
+	k.SetNativeNftIdMap(ctx, pair.GetClassId(), tokenId, msg.TokenId.BigInt())
 
 	return msg.TokenId.String(), nil
 }
@@ -217,6 +223,10 @@ func (k Keeper) ConvertERC721Burn(ctx sdk.Context,
 		return "", errorsmod.Wrapf(
 			types.ErrERC721Brun, "erc721 token %s burn failed", msg.TokenId)
 	}
+
+	// delete token id pair
+	k.DeleteERC721TokenIdMap(ctx, contract, msg.TokenId.BigInt())
+	k.DeleteNativeNftIdMap(ctx, pair.GetClassId(), nativeTokenId)
 
 	return msg.TokenId.String(), nil
 }
