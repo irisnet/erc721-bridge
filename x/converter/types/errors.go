@@ -25,4 +25,7 @@ var (
 	ErrERC721TokenURI          = errorsmod.Register(ModuleName, 21, "erc721 token uri error")
 	ErrERC721TokenData         = errorsmod.Register(ModuleName, 22, "erc721 token data error")
 	ErrERC721Brun              = errorsmod.Register(ModuleName, 23, "erc721 token data error")
+	ErrNotFoundClassMapping    = errorsmod.Register(ModuleName, 24, "not found class mapping")
+	ErrNotFoundTokenMapping    = errorsmod.Register(ModuleName, 25, "not found token mapping")
+	ErrInvalidERC721TokenId    = errorsmod.Register(ModuleName, 26, "invalid erc721 token id")
 )

@@ -8,10 +8,10 @@ import (
 
 // ERC721Data is the struct that holds the data of an ERC721 token
 type ERC721Data struct {
-	Name   string
-	Symbol string
-	URI    string
-	Data   string
+	Name   string `json:"name"`
+	Symbol string `json:"symbol"`
+	URI    string `json:"uri,omitempty"`
+	Data   string `json:"data,omitempty"`
 }
 
 // ERC721StringResponse defines the string value from the call response

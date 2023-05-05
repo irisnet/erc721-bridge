@@ -30,6 +30,8 @@ var (
 	KeyPrefixTokenPairByClass             = []byte{0x03}
 	KeyPrefixNativeTokenIDByERC721TokenID = []byte{0x04}
 	KeyPrefixERC721TokenIDByNativeTokenID = []byte{0x05}
+	KeyPrefixContractClass                = []byte{0x06}
+	KeyPrefixERC721NFT                    = []byte{0x07}
 )
 
 // ERC721 Method Names
