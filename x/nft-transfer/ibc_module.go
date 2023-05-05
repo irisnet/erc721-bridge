@@ -5,7 +5,6 @@ import (
 
 	channeltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
-	ibcexported "github.com/cosmos/ibc-go/v5/modules/core/exported"
 
 	nfttransfer "github.com/bianjieai/nft-transfer"
 	"github.com/bianjieai/nft-transfer/types"
@@ -26,21 +25,6 @@ type IBCModule struct {
 // NewIBCModule creates a new IBCModule given the keeper
 func NewIBCModule(app nfttransfer.IBCModule, k keeper.Keeper) IBCModule {
 	return IBCModule{app, k}
-}
-
-// OnRecvPacket implements the IBCModule interface. A successful acknowledgement
-// is returned if the packet data is successfully decoded and the receive application
-// logic returns without error.
-func (im IBCModule) OnRecvPacket(
-	ctx sdk.Context,
-	packet channeltypes.Packet,
-	relayer sdk.AccAddress,
-) ibcexported.Acknowledgement {
-	var (
-		ack = channeltypes.NewResultAcknowledgement([]byte{byte(1)})
-	)
-	// NOTE: acknowledgement will be written synchronously during IBC handler execution.
-	return ack
 }
 
 // OnAcknowledgementPacket implements the IBCModule interface
