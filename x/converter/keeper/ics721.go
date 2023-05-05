@@ -100,30 +100,9 @@ func (ek erc721Keeper) Mint(ctx sdk.Context, ibcClassId string, tokenID string, 
 // 5. when the token returns to the origin chain, the origin chain performs the unlock operation (transfer), (classId, tokenID)=(contractAddr, erc721TokenId)
 // 6. when the token returns to the sink chain, the origin chain executes the unlock operation (transfer), (classId, tokenID)=(ibcClassId, nftId)
 func (ek erc721Keeper) Transfer(ctx sdk.Context, classID string, tokenID string, tokenData string, receiver sdk.AccAddress) error {
-	var (
-		contractAddr  common.Address
-		erc721TokenId *big.Int
-		ok            bool
-	)
-
-	if strings.HasPrefix(classID, nfttransfertypes.ClassPrefix+"/") {
-		contractAddr, err := ek.classToContract(ctx, classID)
-		if err != nil {
-			return err
-		}
-
-		classID = contractAddr.Hex()
-		id, err := ek.nftToERC721(ctx, classID, tokenID)
-		if err != nil {
-			return err
-		}
-		tokenID = id.String()
-	}
-
-	contractAddr = common.HexToAddress(classID)
-	erc721TokenId, ok = new(big.Int).SetString(tokenID, 10)
-	if !ok {
-		return errorsmod.Wrapf(types.ErrInvalidERC721TokenId, "token_id: %s", tokenID)
+	contractAddr, erc721TokenId, err := ek.getERC721Token(ctx, classID, tokenID)
+	if err != nil {
+		return err
 	}
 
 	// Note: nft-transfer will verify the owner of the token, so here you can directly use the owner to operate
@@ -152,29 +131,8 @@ func (ek erc721Keeper) Burn(ctx sdk.Context, ibcClassId string, nftId string) er
 // 1. when nft is transferred across chains, owner verification may be performed on the origin and sink chains
 // 2. when nft is received, it may be executed on the origin and sink chains
 func (ek erc721Keeper) GetOwner(ctx sdk.Context, classID string, tokenID string) sdk.AccAddress {
-	var (
-		contractAddr  common.Address
-		erc721TokenId *big.Int
-		ok            bool
-	)
-
-	if strings.HasPrefix(classID, nfttransfertypes.ClassPrefix+"/") {
-		contractAddr, err := ek.classToContract(ctx, classID)
-		if err != nil {
-			return sdk.AccAddress{}
-		}
-
-		classID = contractAddr.Hex()
-		id, err := ek.nftToERC721(ctx, classID, tokenID)
-		if err != nil {
-			return sdk.AccAddress{}
-		}
-		tokenID = id.String()
-	}
-
-	contractAddr = common.HexToAddress(classID)
-	erc721TokenId, ok = new(big.Int).SetString(tokenID, 10)
-	if !ok {
+	contractAddr, erc721TokenId, err := ek.getERC721Token(ctx, classID, tokenID)
+	if err != nil {
 		return sdk.AccAddress{}
 	}
 	owner, err := ek.k.OwnerOf(ctx, contracts.ERC721PresetMinterPauserContract.ABI, contractAddr, erc721TokenId)
@@ -238,29 +196,8 @@ func (ek erc721Keeper) GetClass(ctx sdk.Context, classID string) (nfttransfertyp
 
 // GetNFT return the basic information of a nft (token_uri,token_data)
 func (ek erc721Keeper) GetNFT(ctx sdk.Context, classID string, tokenID string) (nfttransfertypes.NFT, bool) {
-	var (
-		contractAddr  common.Address
-		erc721TokenId *big.Int
-		ok            bool
-	)
-
-	if strings.HasPrefix(classID, nfttransfertypes.ClassPrefix+"/") {
-		contractAddr, err := ek.classToContract(ctx, classID)
-		if err != nil {
-			return nil, false
-		}
-
-		classID = contractAddr.Hex()
-		id, err := ek.nftToERC721(ctx, classID, tokenID)
-		if err != nil {
-			return nil, false
-		}
-		tokenID = id.String()
-	}
-
-	contractAddr = common.HexToAddress(classID)
-	erc721TokenId, ok = new(big.Int).SetString(tokenID, 10)
-	if !ok {
+	contractAddr, erc721TokenId, err := ek.getERC721Token(ctx, classID, tokenID)
+	if err != nil {
 		return nil, false
 	}
 
@@ -321,6 +258,35 @@ func (ek erc721Keeper) DeleteTokenMapping(ctx sdk.Context, ibcClassId string, nf
 		classStore.Delete([]byte(nftId))
 	}
 	return nil
+}
+
+func (ek erc721Keeper) getERC721Token(ctx sdk.Context, classID, tokenID string) (common.Address, *big.Int, error) {
+	var (
+		contractAddr  common.Address
+		erc721TokenId *big.Int
+		ok            bool
+	)
+
+	if strings.HasPrefix(classID, nfttransfertypes.ClassPrefix+"/") {
+		contractAddr, err := ek.classToContract(ctx, classID)
+		if err != nil {
+			return common.Address{}, nil, err
+		}
+
+		classID = contractAddr.Hex()
+		id, err := ek.nftToERC721(ctx, classID, tokenID)
+		if err != nil {
+			return common.Address{}, nil, err
+		}
+		tokenID = id.String()
+	}
+
+	contractAddr = common.HexToAddress(classID)
+	erc721TokenId, ok = new(big.Int).SetString(tokenID, 10)
+	if !ok {
+		return common.Address{}, nil, errorsmod.Wrapf(types.ErrInvalidERC721TokenId, "token_id: %s", tokenID)
+	}
+	return contractAddr, erc721TokenId, nil
 }
 
 func (ek erc721Keeper) supportSysInterface(ctx sdk.Context, contract common.Address) bool {
