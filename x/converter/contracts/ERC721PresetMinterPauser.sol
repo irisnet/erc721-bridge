@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "./IERC721Interface.sol";
 
 contract ERC721PresetMinterPauser is
-    Context,
-    AccessControlEnumerable,
-    ERC721Pausable,
-    IERC721PresetMinterPauser
+Context,
+AccessControlEnumerable,
+ERC721Pausable,
+IERC721PresetMinterPauser
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -37,21 +37,26 @@ contract ERC721PresetMinterPauser is
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
-        string memory classData_
+        string memory classData_,
+        address owner_
     ) ERC721(name, symbol) {
         _classData = classData_;
 
         _baseTokenURI = baseTokenURI;
 
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(DEFAULT_ADMIN_ROLE, owner_);
 
-        _setupRole(MINTER_ROLE, _msgSender());
-        _setupRole(PAUSER_ROLE, _msgSender());
-        _setupRole(BURNER_ROLE, _msgSender());
+        _setupRole(MINTER_ROLE, owner_);
+        _setupRole(PAUSER_ROLE, owner_);
+        _setupRole(BURNER_ROLE, owner_);
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseTokenURI;
+    }
+
+    function getIERC721BaseInterfaceID() public pure returns (bytes4) {
+        return type(IERC721Base).interfaceId;
     }
 
     /**
@@ -79,6 +84,10 @@ contract ERC721PresetMinterPauser is
         _mint(to, tokenId);
         _setTokenURI(tokenId, uri);
         _setTokenData(tokenId, _tokenData);
+    }
+
+    function callBaseURI(address to) public virtual returns (string memory) {
+        return IERC721Base(to).baseURI();
     }
 
     /**

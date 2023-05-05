@@ -10,6 +10,8 @@ import (
 type ERC721Data struct {
 	Name   string
 	Symbol string
+	URI    string
+	Data   string
 }
 
 // ERC721StringResponse defines the string value from the call response
@@ -64,4 +66,15 @@ func (e ERC721Token) GetURI() string {
 
 func (e ERC721Token) GetData() string {
 	return e.Data
+}
+
+type ERC721TokenData struct {
+	URI  string
+	Data string
+}
+
+func NewERC721TokenData(URI string) ERC721TokenData {
+	return ERC721TokenData{
+		URI: URI,
+	}
 }
