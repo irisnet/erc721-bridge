@@ -18,7 +18,7 @@ func (k Keeper) ConvertNFT(goCtx context.Context, msg *types.MsgConvertNFT) (*ty
 	// Check if the token pair not exists
 	if !k.IsClassRegistered(ctx, msg.ClassId) {
 		// Register the token pair
-		_, err := k.SaveRegisteredClass(ctx, msg.ClassId)
+		_, err := k.SaveRegisteredClass(ctx, sender, msg.ClassId)
 		if err != nil {
 			return nil, types.ErrRegisterTokenPair
 		}

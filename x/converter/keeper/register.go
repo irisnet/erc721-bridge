@@ -9,7 +9,7 @@ import (
 )
 
 // SaveRegisteredClass saves the registered denom to the store
-func (k Keeper) SaveRegisteredClass(ctx sdk.Context, classId string) (common.Address, error) {
+func (k Keeper) SaveRegisteredClass(ctx sdk.Context, sender sdk.AccAddress, classId string) (common.Address, error) {
 	classInfo, found := k.nftKeeper.GetClass(ctx, classId)
 	if !found {
 		return common.Address{}, errorsmod.Wrapf(
@@ -17,10 +17,16 @@ func (k Keeper) SaveRegisteredClass(ctx sdk.Context, classId string) (common.Add
 			"denom metadata not registered %s", classId,
 		)
 	}
+	deployer := common.BytesToAddress(sender.Bytes())
 
 	// Deployed contract address is used as the key to save the class
 	contractAddr, err := k.DeployERC721Contract(ctx,
-		classInfo.GetName(), classInfo.GetSymbol(), classInfo.GetURI(), classInfo.GetData())
+		deployer,
+		classInfo.GetName(),
+		classInfo.GetSymbol(),
+		classInfo.GetURI(),
+		classInfo.GetData(),
+		types.ModuleAddress)
 	if err != nil {
 		return common.Address{}, errorsmod.Wrap(
 			err, "failed to create wrapped coin denom metadata for ERC721",
@@ -52,13 +58,13 @@ func (k Keeper) SaveRegisteredERC721(ctx sdk.Context, contract common.Address) (
 	erc721Abi := contracts.ERC721PresetMinterPauserContract.ABI
 
 	// Get ERC721 metadata
-	erc721MetaData, err := k.QueryERC721(ctx, contract, erc721Abi)
+	erc721MetaData, err := k.QueryERC721(ctx, contract, erc721Abi, false)
 	if err != nil {
 		return "", err
 	}
 	// Create Data
 	// Create Native Class
-	if err := k.nftKeeper.SaveClass(ctx, classId, erc721MetaData.Name, erc721MetaData.Symbol); err != nil {
+	if err := k.nftKeeper.SaveClass(ctx, classId, erc721MetaData.URI, erc721MetaData.Data); err != nil {
 		return "", errorsmod.Wrapf(types.ErrSaveClass,
 			"failed to save class %s, contract address %s", classId, contract.String())
 	}

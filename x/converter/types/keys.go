@@ -23,22 +23,13 @@ func init() {
 	ModuleAddress = common.BytesToAddress(authtypes.NewModuleAddress(ModuleName).Bytes())
 }
 
-// prefix bytes for the EVM persistent store
-const (
-	prefixTokenPair = iota + 1
-	prefixTokenPairByERC721
-	prefixTokenPairByClass
-	prefixERC721TokenIDByNativeTokenID
-	prefixNativeTokenIDByERC721TokenID
-)
-
 // KVStore key prefixes
 var (
-	KeyPrefixTokenPair                    = []byte{prefixTokenPair}
-	KeyPrefixTokenPairByERC721            = []byte{prefixTokenPairByERC721}
-	KeyPrefixTokenPairByClass             = []byte{prefixTokenPairByClass}
-	KeyPrefixNativeTokenIDByERC721TokenID = []byte{prefixNativeTokenIDByERC721TokenID}
-	KeyPrefixERC721TokenIDByNativeTokenID = []byte{prefixERC721TokenIDByNativeTokenID}
+	KeyPrefixTokenPair                    = []byte{0x01}
+	KeyPrefixTokenPairByERC721            = []byte{0x02}
+	KeyPrefixTokenPairByClass             = []byte{0x03}
+	KeyPrefixNativeTokenIDByERC721TokenID = []byte{0x04}
+	KeyPrefixERC721TokenIDByNativeTokenID = []byte{0x05}
 )
 
 // ERC721 Method Names
@@ -59,9 +50,9 @@ const (
 
 // Supported Interface ID
 const (
-	IERC721InterfaceId                   = "0x80ac58cd"
-	IERC721MeatadataInterfaceId          = "0x5b5e139f"
-	IERC721PresetMinterPauserInterfaceId = "0x9f1bf2d9"
+	IERC721InterfaceId                   = "0x80ac58cd" // 1. IERC721: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.8.1/contracts/token/ERC721/IERC721.sol
+	IERC721MeatadataInterfaceId          = "0x5b5e139f" // 2. IERC721MetaData: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.8.1/contracts/token/ERC721/extensions/IERC721Metadata.sol
+	IERC721PresetMinterPauserInterfaceId = "0x9f1bf2d9" // 3. System ERC721 Contract: https://github.com/irisnet/erc721-bridge/blob/main/x/converter/contracts/IERC721Interface.sol
 )
 
 func KeyTokenIdPair(classId, nftId string) []byte {

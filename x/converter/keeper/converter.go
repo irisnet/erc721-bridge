@@ -44,7 +44,7 @@ func (k Keeper) ConvertNFTMint(
 	erc721Abi := contracts.ERC721PresetMinterPauserContract.ABI
 
 	// Get Token ID
-	newTokenId := k.GenerateERC721TokenID(ctx, msg.ClassId, msg.TokenId)
+	newTokenId := GenerateERC721TokenID(msg.ClassId, msg.TokenId)
 
 	// Mint ERC721 Token To Receiver
 	if err := k.Mint(ctx,
@@ -161,7 +161,7 @@ func (k Keeper) ConvertERC721Mint(ctx sdk.Context,
 	}
 
 	// Generator native token id
-	tokenId := k.GenerateNativeTokenID(ctx, pair.GetERC721Contract(), msg.TokenId.BigInt())
+	tokenId := GenerateNativeTokenID(pair.GetERC721Contract(), msg.TokenId.BigInt())
 
 	classId := pair.GetClassId()
 	if err := k.nftKeeper.Mint(ctx,

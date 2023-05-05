@@ -12,14 +12,15 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
 
-func (k Keeper) DeployERC721Contract(ctx sdk.Context,
-	name, symbol, baseURI, classData string) (common.Address, error) {
+func (k Keeper) DeployERC721Contract(ctx sdk.Context, deployer common.Address,
+	name, symbol, baseURI, classData string, owner common.Address) (common.Address, error) {
 	contractArgs, err := contracts.ERC721PresetMinterPauserContract.ABI.Pack(
 		"",
 		name,
 		symbol,
 		baseURI,
 		classData,
+		owner,
 	)
 	if err != nil {
 		return common.Address{}, errorsmod.Wrapf(types.ErrABIPack, "class metadata is invalid %s: %s", name, err.Error())
@@ -28,12 +29,12 @@ func (k Keeper) DeployERC721Contract(ctx sdk.Context,
 	copy(data[:len(contracts.ERC721PresetMinterPauserContract.Bin)], contracts.ERC721PresetMinterPauserContract.Bin)
 	copy(data[len(contracts.ERC721PresetMinterPauserContract.Bin):], contractArgs)
 
-	nonce, err := k.accountKeeper.GetSequence(ctx, types.ModuleAddress.Bytes())
+	nonce, err := k.accountKeeper.GetSequence(ctx, deployer.Bytes())
 	if err != nil {
 		return common.Address{}, err
 	}
-	contractAddr := crypto.CreateAddress(types.ModuleAddress, nonce)
-	_, err = k.CallEVMWithData(ctx, types.ModuleAddress, nil, data, true)
+	contractAddr := crypto.CreateAddress(deployer, nonce)
+	_, err = k.CallEVMWithData(ctx, deployer, nil, data, true)
 	if err != nil {
 		return common.Address{}, errorsmod.Wrapf(err, "failed to deploy contract for %s", name)
 	}
@@ -113,13 +114,12 @@ func (k Keeper) QueryERC721(
 	ctx sdk.Context,
 	contract common.Address,
 	erc721Abi abi.ABI,
+	isSystem bool,
 ) (types.ERC721Data, error) {
 
 	var (
-		nameRes      types.ERC721StringResponse
-		symbolRes    types.ERC721StringResponse
-		classURIRes  types.ERC721StringResponse
-		classDataRes types.ERC721StringResponse
+		nameRes   types.ERC721StringResponse
+		symbolRes types.ERC721StringResponse
 	)
 
 	// Name
@@ -147,34 +147,92 @@ func (k Keeper) QueryERC721(
 			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
 		)
 	}
+	erc721Data := types.NewERC721Data(nameRes.Value, symbolRes.Value)
+	if isSystem {
+
+		var (
+			classURIRes  types.ERC721StringResponse
+			classDataRes types.ERC721StringResponse
+		)
+
+		// URI
+		res, err = k.CallEVM(ctx,
+			erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodClassURI)
+		if err != nil {
+			return types.ERC721Data{}, err
+		}
+
+		if err := erc721Abi.UnpackIntoInterface(&classURIRes, "baseURI", res.Ret); err != nil {
+			return types.ERC721Data{}, errorsmod.Wrapf(
+				types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
+			)
+		}
+
+		// Class Data
+		res, err = k.CallEVM(ctx,
+			erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodClassData)
+		if err != nil {
+			return types.ERC721Data{}, err
+		}
+		//
+		if err := erc721Abi.UnpackIntoInterface(&classDataRes, "classData", res.Ret); err != nil {
+			return types.ERC721Data{}, errorsmod.Wrapf(
+				types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
+			)
+		}
+		erc721Data.URI = classURIRes.Value
+		erc721Data.Data = classDataRes.Value
+	}
+
+	return erc721Data, nil
+}
+
+// QueryERC721Token queries an ERC721 token
+func (k Keeper) QueryERC721Token(
+	ctx sdk.Context,
+	contract common.Address,
+	erc721Abi abi.ABI,
+	tokenId *big.Int,
+	isSystem bool,
+) (types.ERC721TokenData, error) {
+
+	var (
+		tokenURIRs types.ERC721StringResponse
+		tokenData  types.ERC721StringResponse
+	)
 
 	// URI
-	res, err = k.CallEVM(ctx,
-		erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodClassURI)
+	res, err := k.CallEVM(ctx,
+		erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodTokenURI, tokenId)
 	if err != nil {
-		return types.ERC721Data{}, err
+		return types.ERC721TokenData{}, err
 	}
 
-	if err := erc721Abi.UnpackIntoInterface(&classURIRes, "baseURI", res.Ret); err != nil {
-		return types.ERC721Data{}, errorsmod.Wrapf(
-			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
+	if err := erc721Abi.UnpackIntoInterface(&tokenURIRs, "tokenURI", res.Ret); err != nil {
+		return types.ERC721TokenData{}, errorsmod.Wrapf(
+			types.ErrABIUnpack, "failed to unpack tokenURI: %s", err.Error(),
 		)
 	}
 
-	// Class Data
-	res, err = k.CallEVM(ctx,
-		erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodClassData)
-	if err != nil {
-		return types.ERC721Data{}, err
-	}
-	//
-	if err := erc721Abi.UnpackIntoInterface(&classDataRes, "classData", res.Ret); err != nil {
-		return types.ERC721Data{}, errorsmod.Wrapf(
-			types.ErrABIUnpack, "failed to unpack symbol: %s", err.Error(),
-		)
+	erc721TokenData := types.NewERC721TokenData(tokenURIRs.Value)
+
+	if isSystem {
+		// Data
+		res, err = k.CallEVM(ctx,
+			erc721Abi, types.ModuleAddress, contract, false, types.ERC721MethodTokenData, tokenId)
+		if err != nil {
+			return types.ERC721TokenData{}, err
+		}
+
+		if err := erc721Abi.UnpackIntoInterface(&tokenData, "tokenData", res.Ret); err != nil {
+			return types.ERC721TokenData{}, errorsmod.Wrapf(
+				types.ErrABIUnpack, "failed to unpack tokenData: %s", err.Error(),
+			)
+		}
+		erc721TokenData.Data = tokenData.Value
 	}
 
-	return types.NewERC721Data(nameRes.Value, symbolRes.Value), nil
+	return erc721TokenData, nil
 }
 
 // ClassData queries an account's class data for a given ERC721 contract
