@@ -78,7 +78,7 @@ IERC721PresetMinterPauser
     ) public virtual {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
-            "ERC721PresetMinterPauserAutoId: must have minter role to mint"
+            "ERC721PresetMinterPauser: must have minter role to mint"
         );
 
         _mint(to, tokenId);
@@ -97,8 +97,8 @@ IERC721PresetMinterPauser
      */
     function burn(uint256 tokenId) public virtual {
         require(
-            hasRole(BURNER_ROLE, _msgSender()),
-            "ERC721PresetMinterPauserAutoId: must have burner role to burn"
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
         );
         _burn(tokenId);
     }
@@ -109,7 +109,7 @@ IERC721PresetMinterPauser
     ) public virtual {
         require(
             hasRole(DEFAULT_ADMIN_ROLE, _msgSender()),
-            "ERC721PresetMinterPauserAutoId: must have admin role to set class data"
+            "ERC721PresetMinterPauser: must have admin role to set class data"
         );
         _classData = classData_;
         _baseTokenURI = baseTokenURI_;
@@ -127,7 +127,7 @@ IERC721PresetMinterPauser
     function pause() public virtual {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
-            "ERC721PresetMinterPauserAutoId: must have pauser role to pause"
+            "ERC721PresetMinterPauser: must have pauser role to pause"
         );
         _pause();
     }
@@ -144,7 +144,7 @@ IERC721PresetMinterPauser
     function unpause() public virtual {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
-            "ERC721PresetMinterPauserAutoId: must have pauser role to unpause"
+            "ERC721PresetMinterPauser: must have pauser role to unpause"
         );
         _unpause();
     }
