@@ -24,6 +24,10 @@ type erc721Keeper struct {
 	k Keeper
 }
 
+func NewERC721Keeper(k Keeper) erc721Keeper {
+	return erc721Keeper{k}
+}
+
 // CreateOrUpdateClass deploys an erc721 contract.
 // It will only be executed on the sink chain, and it will only be executed once
 func (ek erc721Keeper) CreateOrUpdateClass(ctx sdk.Context, ibcClassId string, classURI string, classData string) error {
