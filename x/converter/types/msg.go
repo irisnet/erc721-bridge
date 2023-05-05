@@ -94,6 +94,6 @@ func (msg MsgConvertERC721) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgConvertERC721) GetSigners() []sdk.AccAddress {
-	sender := sdk.MustAccAddressFromBech32(msg.Sender)
-	return []sdk.AccAddress{sender}
+	addr := common.HexToAddress(msg.Sender)
+	return []sdk.AccAddress{addr.Bytes()}
 }
