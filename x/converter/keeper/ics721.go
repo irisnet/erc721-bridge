@@ -158,7 +158,7 @@ func (ek erc721Keeper) GetOwner(ctx sdk.Context, classID string, tokenID string)
 	return sdk.AccAddress(owner.Bytes())
 }
 
-// HasClass not need to be implemented
+// HasClass return whether the class or contract exists
 func (ek erc721Keeper) HasClass(ctx sdk.Context, classID string) bool {
 	if strings.HasPrefix(classID, nfttransfertypes.ClassPrefix+"/") {
 		contractAddr, err := ek.classToContract(ctx, classID)
@@ -172,6 +172,7 @@ func (ek erc721Keeper) HasClass(ctx sdk.Context, classID string) bool {
 	return ek.HasContract(ctx, contractAddr)
 }
 
+// GetClass return the basic information of a class or contract (class_uri, class_data or base_uri, name, symbol)
 func (ek erc721Keeper) GetClass(ctx sdk.Context, classID string) (nfttransfertypes.Class, bool) {
 	if strings.HasPrefix(classID, nfttransfertypes.ClassPrefix+"/") {
 		contractAddr, err := ek.classToContract(ctx, classID)
@@ -193,6 +194,7 @@ func (ek erc721Keeper) GetClass(ctx sdk.Context, classID string) (nfttransfertyp
 	}, true
 }
 
+// GetNFT return the basic information of a nft (token_uri,token_data)
 func (ek erc721Keeper) GetNFT(ctx sdk.Context, classID string, tokenID string) (nfttransfertypes.NFT, bool) {
 	var (
 		contractAddr  common.Address
@@ -231,15 +233,23 @@ func (ek erc721Keeper) GetNFT(ctx sdk.Context, classID string, tokenID string) (
 	}, true
 }
 
-func (ek erc721Keeper) ContractToClass(ctx sdk.Context, contractAddr common.Address) (string, error) {
-	store := ek.contractClassStore(ctx)
+// ContractToClass returns the classId of the contract mapping
+func (ek erc721Keeper) ContractToClass(ctx sdk.Context, contractAddr common.Address) (string, bool) {
+	store := ek.classStore(ctx)
 	bz := store.Get(contractAddr.Bytes())
 	if bz == nil || len(bz) == 0 {
-		return "", errors.New("not found")
+		return "", false
 	}
-	return string(bz), nil
+	return string(bz), true
 }
 
+// ClassToContract returns the contract address of the classId mapping
+func (ek erc721Keeper) ClassToContract(ctx sdk.Context, classId string) (common.Address, bool) {
+	contractAddr, err := ek.classToContract(ctx, classId)
+	return contractAddr, err == nil
+}
+
+// HasContract return whether the contract exists
 func (ek erc721Keeper) HasContract(ctx sdk.Context, contract common.Address) bool {
 	account := ek.k.evmKeeper.GetAccountWithoutBalance(ctx, contract)
 	if account == nil {
@@ -248,8 +258,9 @@ func (ek erc721Keeper) HasContract(ctx sdk.Context, contract common.Address) boo
 	return account.IsContract()
 }
 
+// ERC721ToNFT returns the nftId of the (contractAddr,erc721TokenId) mapping
 func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc721TokenId *big.Int) (string, error) {
-	erc721Store := ek.erc721NFTStore(ctx, contract.Bytes())
+	erc721Store := ek.tokenStore(ctx, contract.Bytes())
 	bz := erc721Store.Get(erc721TokenId.Bytes())
 	if bz == nil || len(bz) == 0 {
 		return "", errors.New("not found")
@@ -257,8 +268,17 @@ func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc
 	return string(bz), nil
 }
 
+// ERC721ToNFT delete the (ibcClassId,[]nftId) mapping
+func (ek erc721Keeper) DeleteTokenMapping(ctx sdk.Context, ibcClassId string, nftId []string) error {
+	classStore := ek.tokenStore(ctx, []byte(ibcClassId))
+	for _, nftId := range nftId {
+		classStore.Delete([]byte(nftId))
+	}
+	return nil
+}
+
 func (ek erc721Keeper) mapClassAndContract(ctx sdk.Context, ibcClassId string, contractAddr common.Address) {
-	store := ek.contractClassStore(ctx)
+	store := ek.classStore(ctx)
 	store.Set([]byte(ibcClassId), contractAddr.Bytes())
 	store.Set(contractAddr.Bytes(), []byte(ibcClassId))
 }
@@ -269,15 +289,15 @@ func (ek erc721Keeper) mapERC721AndNFT(ctx sdk.Context,
 	contractAddr common.Address,
 	erc721TokenId *big.Int,
 ) {
-	classStore := ek.erc721NFTStore(ctx, []byte(ibcClassId))
+	classStore := ek.tokenStore(ctx, []byte(ibcClassId))
 	classStore.Set([]byte(nftId), erc721TokenId.Bytes())
 
-	erc721Store := ek.erc721NFTStore(ctx, contractAddr.Bytes())
+	erc721Store := ek.tokenStore(ctx, contractAddr.Bytes())
 	erc721Store.Set(erc721TokenId.Bytes(), []byte(nftId))
 }
 
 func (ek erc721Keeper) classToContract(ctx sdk.Context, ibcClassId string) (common.Address, error) {
-	store := ek.contractClassStore(ctx)
+	store := ek.classStore(ctx)
 	contractBz := store.Get([]byte(ibcClassId))
 	if contractBz == nil || len(contractBz) == 0 {
 		return common.Address{}, errors.New("not found")
@@ -286,7 +306,7 @@ func (ek erc721Keeper) classToContract(ctx sdk.Context, ibcClassId string) (comm
 }
 
 func (ek erc721Keeper) nftToERC721(ctx sdk.Context, ibcClassId string, nftId string) (*big.Int, error) {
-	classStore := ek.erc721NFTStore(ctx, []byte(ibcClassId))
+	classStore := ek.tokenStore(ctx, []byte(ibcClassId))
 	bz := classStore.Get([]byte(nftId))
 	if bz == nil || len(bz) == 0 {
 		return nil, errors.New("not found")
