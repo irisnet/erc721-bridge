@@ -56,8 +56,7 @@ func (Owner) EnumDescriptor() ([]byte, []int) {
 }
 
 // TokenPair defines an instance that records a pairing consisting of a native
-//
-//	Cosmos Coin and an ERC721 token address.
+//  Cosmos Coin and an ERC721 token address.
 type TokenPair struct {
 	// erc721_address is the hex address of ERC721 contract token
 	Erc721Address string `protobuf:"bytes,1,opt,name=erc721_address,json=erc721Address,proto3" json:"erc721_address,omitempty"`
