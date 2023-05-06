@@ -241,13 +241,13 @@ func (ek erc721Keeper) HasContract(ctx sdk.Context, contract common.Address) boo
 }
 
 // ERC721ToNFT returns the nftId of the (contractAddr,erc721TokenId) mapping
-func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc721TokenId *big.Int) (string, error) {
+func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc721TokenId *big.Int) (string, bool) {
 	erc721Store := ek.tokenStore(ctx, contract.Bytes())
 	bz := erc721Store.Get(erc721TokenId.Bytes())
 	if bz == nil || len(bz) == 0 {
-		return "", errorsmod.Wrapf(types.ErrInvalidERC721TokenId, "token_id: %s", erc721TokenId)
+		return "", false
 	}
-	return string(bz), nil
+	return string(bz), true
 }
 
 // ERC721ToNFT delete the (ibcClassId,[]nftId) mapping
