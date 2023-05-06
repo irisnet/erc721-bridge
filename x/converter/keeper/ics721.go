@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"encoding/json"
-	"errors"
 	"math/big"
 	"strings"
 
@@ -246,16 +245,29 @@ func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc
 	erc721Store := ek.tokenStore(ctx, contract.Bytes())
 	bz := erc721Store.Get(erc721TokenId.Bytes())
 	if bz == nil || len(bz) == 0 {
-		return "", errors.New("not found")
+		return "", errorsmod.Wrapf(types.ErrInvalidERC721TokenId, "token_id: %s", erc721TokenId)
 	}
 	return string(bz), nil
 }
 
 // ERC721ToNFT delete the (ibcClassId,[]nftId) mapping
 func (ek erc721Keeper) DeleteTokenMapping(ctx sdk.Context, ibcClassId string, nftId []string) error {
-	classStore := ek.tokenStore(ctx, []byte(ibcClassId))
-	for _, nftId := range nftId {
-		classStore.Delete([]byte(nftId))
+	erc721TokenIds := make([]*big.Int, 0, len(nftId))
+
+	tokenStore := ek.tokenStore(ctx, []byte(ibcClassId))
+	for i, nftId := range nftId {
+		erc721TokenIds[i] = new(big.Int).SetBytes(tokenStore.Get([]byte(nftId)))
+		tokenStore.Delete([]byte(nftId))
+	}
+
+	contractAddr, exist := ek.ClassToContract(ctx, ibcClassId)
+	if !exist {
+		return nil
+	}
+
+	tokenStore = ek.tokenStore(ctx, contractAddr.Bytes())
+	for _, erc721TokenId := range erc721TokenIds {
+		tokenStore.Delete(erc721TokenId.Bytes())
 	}
 	return nil
 }
