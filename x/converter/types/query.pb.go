@@ -227,46 +227,163 @@ func (m *QueryTokenPairResponse) GetTokenPair() TokenPair {
 	return TokenPair{}
 }
 
+// QueryTokenTraceRequest is the request type for the Query/TokenTrace RPC method.
+type QueryTokenTraceRequest struct {
+	// class_id is class_id entered by the user (may be ibc_class_id or erc721 contract address)
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// token_id is token_id entered by the user (may be nft_id or erc721 token_id)
+	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+}
+
+func (m *QueryTokenTraceRequest) Reset()         { *m = QueryTokenTraceRequest{} }
+func (m *QueryTokenTraceRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenTraceRequest) ProtoMessage()    {}
+func (*QueryTokenTraceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_10a0370fef69dc1a, []int{4}
+}
+func (m *QueryTokenTraceRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTokenTraceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTokenTraceRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTokenTraceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenTraceRequest.Merge(m, src)
+}
+func (m *QueryTokenTraceRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTokenTraceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenTraceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTokenTraceRequest proto.InternalMessageInfo
+
+func (m *QueryTokenTraceRequest) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *QueryTokenTraceRequest) GetTokenId() string {
+	if m != nil {
+		return m.TokenId
+	}
+	return ""
+}
+
+// QueryTokenTraceResponse is the response type for the Query/TokenTrace RPC
+// method.
+type QueryTokenTraceResponse struct {
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+}
+
+func (m *QueryTokenTraceResponse) Reset()         { *m = QueryTokenTraceResponse{} }
+func (m *QueryTokenTraceResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenTraceResponse) ProtoMessage()    {}
+func (*QueryTokenTraceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_10a0370fef69dc1a, []int{5}
+}
+func (m *QueryTokenTraceResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTokenTraceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTokenTraceResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTokenTraceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenTraceResponse.Merge(m, src)
+}
+func (m *QueryTokenTraceResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTokenTraceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenTraceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTokenTraceResponse proto.InternalMessageInfo
+
+func (m *QueryTokenTraceResponse) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *QueryTokenTraceResponse) GetTokenId() string {
+	if m != nil {
+		return m.TokenId
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QueryTokenPairsRequest)(nil), "erc721_bridge.converter.v1.QueryTokenPairsRequest")
 	proto.RegisterType((*QueryTokenPairsResponse)(nil), "erc721_bridge.converter.v1.QueryTokenPairsResponse")
 	proto.RegisterType((*QueryTokenPairRequest)(nil), "erc721_bridge.converter.v1.QueryTokenPairRequest")
 	proto.RegisterType((*QueryTokenPairResponse)(nil), "erc721_bridge.converter.v1.QueryTokenPairResponse")
+	proto.RegisterType((*QueryTokenTraceRequest)(nil), "erc721_bridge.converter.v1.QueryTokenTraceRequest")
+	proto.RegisterType((*QueryTokenTraceResponse)(nil), "erc721_bridge.converter.v1.QueryTokenTraceResponse")
 }
 
 func init() { proto.RegisterFile("converter/v1/query.proto", fileDescriptor_10a0370fef69dc1a) }
 
 var fileDescriptor_10a0370fef69dc1a = []byte{
-	// 462 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x3f, 0x6f, 0x13, 0x31,
-	0x18, 0xc6, 0xe3, 0x40, 0x91, 0xe2, 0x6c, 0x56, 0x81, 0x10, 0x55, 0x47, 0x15, 0x95, 0x52, 0x21,
-	0x6a, 0xeb, 0xdc, 0xa1, 0x7b, 0x11, 0x20, 0xa1, 0x0e, 0xe5, 0xc4, 0xc4, 0x52, 0x7c, 0xe9, 0x2b,
-	0x63, 0x41, 0xed, 0xab, 0xed, 0x9c, 0xa8, 0x10, 0x0b, 0x9f, 0x00, 0x89, 0x91, 0x85, 0x8f, 0xc0,
-	0xc7, 0xc8, 0x58, 0x89, 0x85, 0x09, 0xa1, 0x84, 0x0f, 0x82, 0xce, 0xbe, 0x5e, 0x1a, 0xfe, 0x84,
-	0x66, 0xbb, 0xb3, 0xdf, 0xe7, 0x7d, 0x7e, 0xef, 0x63, 0x1b, 0xf7, 0x86, 0x46, 0x97, 0x60, 0x3d,
-	0x58, 0x56, 0xa6, 0xec, 0x64, 0x04, 0xf6, 0x94, 0x16, 0xd6, 0x78, 0x43, 0xfa, 0x60, 0x87, 0xbb,
-	0x3c, 0x3d, 0xcc, 0xad, 0x3a, 0x92, 0x40, 0x9b, 0x3a, 0x5a, 0xa6, 0xfd, 0x55, 0x69, 0xa4, 0x09,
-	0x65, 0xac, 0xfa, 0x8a, 0x8a, 0xfe, 0x9a, 0x34, 0x46, 0xbe, 0x06, 0x26, 0x0a, 0xc5, 0x84, 0xd6,
-	0xc6, 0x0b, 0xaf, 0x8c, 0x76, 0xf5, 0xee, 0xbd, 0xa1, 0x71, 0xc7, 0xc6, 0xb1, 0x5c, 0x38, 0x88,
-	0x46, 0xac, 0x4c, 0x73, 0xf0, 0x22, 0x65, 0x85, 0x90, 0x4a, 0x87, 0xe2, 0xba, 0xf6, 0xd6, 0x1c,
-	0x55, 0x04, 0x89, 0x5b, 0x83, 0x17, 0xf8, 0xc6, 0xd3, 0x4a, 0xfc, 0xcc, 0xbc, 0x02, 0x7d, 0x20,
-	0x94, 0x75, 0x19, 0x9c, 0x8c, 0xc0, 0x79, 0xf2, 0x08, 0xe3, 0x59, 0xa3, 0x1e, 0x5a, 0x47, 0x5b,
-	0x5d, 0xbe, 0x49, 0xa3, 0x2b, 0xad, 0x5c, 0x69, 0x1c, 0xaf, 0x76, 0xa5, 0x07, 0x42, 0x42, 0xad,
-	0xcd, 0x2e, 0x28, 0x07, 0x5f, 0x10, 0xbe, 0xf9, 0x87, 0x85, 0x2b, 0x8c, 0x76, 0x40, 0xf6, 0x71,
-	0xd7, 0x57, 0xab, 0x87, 0x45, 0xb5, 0xdc, 0x43, 0xeb, 0x57, 0xb6, 0xba, 0xfc, 0x0e, 0xfd, 0x77,
-	0x54, 0xb4, 0x69, 0xb2, 0x77, 0x75, 0xfc, 0xfd, 0x76, 0x2b, 0xc3, 0xbe, 0xe9, 0x4a, 0x1e, 0xcf,
-	0x11, 0xb7, 0x03, 0xf1, 0xdd, 0xff, 0x12, 0x47, 0x94, 0x39, 0xe4, 0x6d, 0x7c, 0x7d, 0x9e, 0xf8,
-	0x3c, 0x93, 0x55, 0xbc, 0x12, 0xfc, 0x42, 0x1c, 0x9d, 0x2c, 0xfe, 0x0c, 0x8e, 0x7e, 0xcf, 0xb0,
-	0x99, 0xef, 0x09, 0xc6, 0xb3, 0xf9, 0xea, 0x0c, 0x97, 0x1a, 0xaf, 0xd3, 0x8c, 0xc7, 0xc7, 0x6d,
-	0xbc, 0x12, 0x6c, 0xc8, 0x27, 0x84, 0xf1, 0x2c, 0x4c, 0xc2, 0x17, 0x35, 0xfc, 0xfb, 0xe1, 0xf6,
-	0x77, 0x96, 0xd2, 0xc4, 0x69, 0x06, 0x1b, 0xef, 0xbf, 0xfe, 0xfc, 0xd8, 0x4e, 0xc8, 0x1a, 0x83,
-	0xb2, 0xba, 0x7a, 0x0f, 0xb3, 0x07, 0xbb, 0x3c, 0xad, 0xae, 0xd4, 0x85, 0x43, 0x24, 0x9f, 0x11,
-	0xee, 0x34, 0x62, 0x92, 0x5e, 0xde, 0xe8, 0x9c, 0x8d, 0x2f, 0x23, 0xa9, 0xd1, 0xee, 0x07, 0xb4,
-	0x4d, 0xb2, 0xb1, 0x08, 0x8d, 0xbd, 0x0d, 0x3f, 0xef, 0xf6, 0xf6, 0xc7, 0x93, 0x04, 0x9d, 0x4d,
-	0x12, 0xf4, 0x63, 0x92, 0xa0, 0x0f, 0xd3, 0xa4, 0x75, 0x36, 0x4d, 0x5a, 0xdf, 0xa6, 0x49, 0xeb,
-	0x39, 0x97, 0xca, 0xbf, 0x1c, 0xe5, 0x74, 0x68, 0x8e, 0x99, 0xb2, 0xca, 0x69, 0xf0, 0xf5, 0x7b,
-	0xd9, 0x8e, 0x34, 0xec, 0x0d, 0x9b, 0x3d, 0x26, 0x7f, 0x5a, 0x80, 0xcb, 0xaf, 0x85, 0x97, 0xb4,
-	0xf3, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x90, 0x25, 0x6d, 0x06, 0xfc, 0x03, 0x00, 0x00,
+	// 552 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0x4f, 0x4f, 0xd4, 0x40,
+	0x18, 0xc6, 0xb7, 0x20, 0xe2, 0xce, 0xde, 0x26, 0xa8, 0xcb, 0x86, 0x54, 0xd2, 0x20, 0x12, 0x23,
+	0x33, 0x69, 0x31, 0x21, 0xf1, 0x88, 0x51, 0x83, 0x21, 0x8a, 0x0d, 0x27, 0x2f, 0xeb, 0x6c, 0x3b,
+	0xa9, 0x13, 0xa1, 0x53, 0x3a, 0xb3, 0x1b, 0x09, 0xe1, 0xe2, 0x27, 0x30, 0xf1, 0xe8, 0xc5, 0x8f,
+	0xa0, 0xdf, 0x82, 0x23, 0x89, 0x17, 0x4f, 0xc6, 0xec, 0xfa, 0x31, 0x3c, 0x98, 0xf9, 0xd3, 0x6e,
+	0xab, 0x82, 0xbb, 0xdc, 0x3a, 0x33, 0xef, 0xfb, 0x3e, 0xbf, 0xf7, 0x99, 0xb7, 0x03, 0xda, 0x11,
+	0x4f, 0x07, 0x34, 0x97, 0x34, 0xc7, 0x03, 0x1f, 0x1f, 0xf6, 0x69, 0x7e, 0x84, 0xb2, 0x9c, 0x4b,
+	0x0e, 0x3b, 0x34, 0x8f, 0x36, 0x03, 0xbf, 0xdb, 0xcb, 0x59, 0x9c, 0x50, 0x54, 0xc6, 0xa1, 0x81,
+	0xdf, 0x59, 0x48, 0x78, 0xc2, 0x75, 0x18, 0x56, 0x5f, 0x26, 0xa3, 0xb3, 0x94, 0x70, 0x9e, 0xec,
+	0x53, 0x4c, 0x32, 0x86, 0x49, 0x9a, 0x72, 0x49, 0x24, 0xe3, 0xa9, 0xb0, 0xa7, 0x77, 0x23, 0x2e,
+	0x0e, 0xb8, 0xc0, 0x3d, 0x22, 0xa8, 0x11, 0xc2, 0x03, 0xbf, 0x47, 0x25, 0xf1, 0x71, 0x46, 0x12,
+	0x96, 0xea, 0x60, 0x1b, 0xbb, 0x58, 0xa3, 0x32, 0x20, 0xe6, 0xc8, 0x7b, 0x05, 0x6e, 0xbc, 0x50,
+	0xc9, 0x7b, 0xfc, 0x0d, 0x4d, 0x77, 0x09, 0xcb, 0x45, 0x48, 0x0f, 0xfb, 0x54, 0x48, 0xf8, 0x18,
+	0x80, 0x71, 0xa1, 0xb6, 0xb3, 0xec, 0xac, 0xb5, 0x82, 0x55, 0x64, 0x54, 0x91, 0x52, 0x45, 0xa6,
+	0x3d, 0xab, 0x8a, 0x76, 0x49, 0x42, 0x6d, 0x6e, 0x58, 0xc9, 0xf4, 0x3e, 0x3b, 0xe0, 0xe6, 0x5f,
+	0x12, 0x22, 0xe3, 0xa9, 0xa0, 0x70, 0x07, 0xb4, 0xa4, 0xda, 0xed, 0x66, 0x6a, 0xbb, 0xed, 0x2c,
+	0xcf, 0xae, 0xb5, 0x82, 0xdb, 0xe8, 0x7c, 0xab, 0x50, 0x59, 0x64, 0xeb, 0xca, 0xe9, 0xf7, 0x5b,
+	0x8d, 0x10, 0xc8, 0xb2, 0x2a, 0x7c, 0x52, 0x23, 0x9e, 0xd1, 0xc4, 0x77, 0xfe, 0x4b, 0x6c, 0x50,
+	0x6a, 0xc8, 0xeb, 0xe0, 0x7a, 0x9d, 0xb8, 0xf0, 0x64, 0x01, 0xcc, 0x69, 0x3d, 0x6d, 0x47, 0x33,
+	0x34, 0x0b, 0x2f, 0xfe, 0xd3, 0xc3, 0xb2, 0xbf, 0xa7, 0x00, 0x8c, 0xfb, 0xb3, 0x1e, 0x4e, 0xd5,
+	0x5e, 0xb3, 0x6c, 0xcf, 0x7b, 0x56, 0x55, 0xd9, 0xcb, 0x49, 0x54, 0xb8, 0x0d, 0x17, 0xc1, 0xb5,
+	0x68, 0x9f, 0x08, 0xd1, 0x65, 0xb1, 0x05, 0x9b, 0xd7, 0xeb, 0xed, 0x58, 0x1d, 0x19, 0x00, 0x16,
+	0x6b, 0x43, 0x9a, 0xe1, 0xbc, 0x5e, 0x6f, 0xc7, 0xde, 0xf3, 0xea, 0xb5, 0xd8, 0x7a, 0x16, 0xfb,
+	0x52, 0x05, 0x83, 0x5f, 0xb3, 0x60, 0x4e, 0x57, 0x84, 0x1f, 0x1d, 0x00, 0xc6, 0xb7, 0x0d, 0x83,
+	0x8b, 0x3a, 0xfe, 0xf7, 0xf4, 0x75, 0x36, 0xa6, 0xca, 0x31, 0xdc, 0xde, 0xca, 0xbb, 0xaf, 0x3f,
+	0x3f, 0xcc, 0xb8, 0x70, 0x09, 0xd3, 0x81, 0xfa, 0x37, 0x1e, 0x85, 0x0f, 0x37, 0x03, 0x5f, 0xcd,
+	0x7c, 0x65, 0xca, 0xe0, 0x27, 0x07, 0x34, 0xcb, 0x64, 0xe8, 0x4f, 0x2e, 0x54, 0xb0, 0x05, 0xd3,
+	0xa4, 0x58, 0xb4, 0x7b, 0x1a, 0x6d, 0x15, 0xae, 0x5c, 0x84, 0x86, 0x8f, 0xf5, 0xe2, 0x04, 0x7e,
+	0x29, 0x0c, 0xd4, 0xf7, 0x32, 0xa9, 0x81, 0xd5, 0xa1, 0x98, 0xd4, 0xc0, 0xda, 0xc5, 0x7b, 0x0f,
+	0x34, 0xe5, 0x7d, 0x18, 0x9c, 0x43, 0x29, 0x55, 0x34, 0x3e, 0x2e, 0x86, 0xe3, 0xc4, 0x02, 0xab,
+	0xcf, 0xad, 0x9d, 0xd3, 0xa1, 0xeb, 0x9c, 0x0d, 0x5d, 0xe7, 0xc7, 0xd0, 0x75, 0xde, 0x8f, 0xdc,
+	0xc6, 0xd9, 0xc8, 0x6d, 0x7c, 0x1b, 0xb9, 0x8d, 0x97, 0x41, 0xc2, 0xe4, 0xeb, 0x7e, 0x0f, 0x45,
+	0xfc, 0x00, 0xb3, 0x9c, 0x89, 0x94, 0x4a, 0xfb, 0x08, 0xad, 0x1b, 0x38, 0xfc, 0x16, 0x8f, 0x5f,
+	0x28, 0x79, 0x94, 0x51, 0xd1, 0xbb, 0xaa, 0x9f, 0xa7, 0x8d, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff,
+	0xd8, 0x63, 0xa8, 0xef, 0x51, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -285,6 +402,8 @@ type QueryClient interface {
 	TokenPairs(ctx context.Context, in *QueryTokenPairsRequest, opts ...grpc.CallOption) (*QueryTokenPairsResponse, error)
 	// TokenPair retrieves a registered token pair
 	TokenPair(ctx context.Context, in *QueryTokenPairRequest, opts ...grpc.CallOption) (*QueryTokenPairResponse, error)
+	// TokenTrace retrieves a cross-chain token trace
+	TokenTrace(ctx context.Context, in *QueryTokenTraceRequest, opts ...grpc.CallOption) (*QueryTokenTraceResponse, error)
 }
 
 type queryClient struct {
@@ -313,12 +432,23 @@ func (c *queryClient) TokenPair(ctx context.Context, in *QueryTokenPairRequest, 
 	return out, nil
 }
 
+func (c *queryClient) TokenTrace(ctx context.Context, in *QueryTokenTraceRequest, opts ...grpc.CallOption) (*QueryTokenTraceResponse, error) {
+	out := new(QueryTokenTraceResponse)
+	err := c.cc.Invoke(ctx, "/erc721_bridge.converter.v1.Query/TokenTrace", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// TokenPairs retrieves registered token pairs
 	TokenPairs(context.Context, *QueryTokenPairsRequest) (*QueryTokenPairsResponse, error)
 	// TokenPair retrieves a registered token pair
 	TokenPair(context.Context, *QueryTokenPairRequest) (*QueryTokenPairResponse, error)
+	// TokenTrace retrieves a cross-chain token trace
+	TokenTrace(context.Context, *QueryTokenTraceRequest) (*QueryTokenTraceResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -330,6 +460,9 @@ func (*UnimplementedQueryServer) TokenPairs(ctx context.Context, req *QueryToken
 }
 func (*UnimplementedQueryServer) TokenPair(ctx context.Context, req *QueryTokenPairRequest) (*QueryTokenPairResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TokenPair not implemented")
+}
+func (*UnimplementedQueryServer) TokenTrace(ctx context.Context, req *QueryTokenTraceRequest) (*QueryTokenTraceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TokenTrace not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -372,6 +505,24 @@ func _Query_TokenPair_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_TokenTrace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenTraceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TokenTrace(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/erc721_bridge.converter.v1.Query/TokenTrace",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TokenTrace(ctx, req.(*QueryTokenTraceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "erc721_bridge.converter.v1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -383,6 +534,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TokenPair",
 			Handler:    _Query_TokenPair_Handler,
+		},
+		{
+			MethodName: "TokenTrace",
+			Handler:    _Query_TokenTrace_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -536,6 +691,80 @@ func (m *QueryTokenPairResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryTokenTraceRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTokenTraceRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTokenTraceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.TokenId) > 0 {
+		i -= len(m.TokenId)
+		copy(dAtA[i:], m.TokenId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TokenId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTokenTraceResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTokenTraceResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTokenTraceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.TokenId) > 0 {
+		i -= len(m.TokenId)
+		copy(dAtA[i:], m.TokenId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TokenId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -600,6 +829,40 @@ func (m *QueryTokenPairResponse) Size() (n int) {
 	_ = l
 	l = m.TokenPair.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryTokenTraceRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.TokenId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryTokenTraceResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.TokenId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -958,6 +1221,234 @@ func (m *QueryTokenPairResponse) Unmarshal(dAtA []byte) error {
 			if err := m.TokenPair.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTokenTraceRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTokenTraceRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTokenTraceRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TokenId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTokenTraceResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTokenTraceResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTokenTraceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TokenId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
