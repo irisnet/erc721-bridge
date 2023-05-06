@@ -274,7 +274,7 @@ func (k Keeper) SupportsInterface(ctx sdk.Context,
 		return false, err
 	}
 
-	unpacked, err := erc721Abi.Unpack("classData", res.Ret)
+	unpacked, err := erc721Abi.Unpack(types.ERC165MethodSupportsInterface, res.Ret)
 	if err != nil || len(unpacked) == 0 {
 		return false, err
 	}
