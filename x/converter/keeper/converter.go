@@ -153,24 +153,17 @@ func (k Keeper) ConvertERC721Mint(ctx sdk.Context,
 	}
 
 	// Check expected receiver nft owner after mint
-	tokenURI, err := k.TokenURI(ctx, erc721Abi, contract, msg.TokenId.BigInt())
+	tokenMetadata, err := k.QueryERC721Token(ctx, contract, erc721Abi, msg.TokenId.BigInt(), false)
 	if err != nil {
 		return "", errorsmod.Wrapf(types.ErrERC721TokenURI,
 			"erc721 token %s tokenURI failed", msg.TokenId)
 	}
-
-	tokenData, err := k.TokenData(ctx, erc721Abi, contract, msg.TokenId.BigInt())
-	if err != nil {
-		return "", errorsmod.Wrapf(types.ErrERC721TokenData,
-			"erc721 token %s tokenURI failed", msg.TokenId)
-	}
-
 	// Generator native token id
 	tokenId := GenerateNativeTokenID(pair.GetERC721Contract(), msg.TokenId.BigInt())
 
 	classId := pair.GetClassId()
 	if err := k.nftKeeper.Mint(ctx,
-		classId, tokenId, tokenURI, tokenData, receiver); err != nil {
+		classId, tokenId, tokenMetadata.URI, tokenMetadata.Data, receiver); err != nil {
 		return "", errorsmod.Wrapf(types.ErrNativeNFTMint,
 			"native nft %s mint failed", msg.TokenId,
 		)
