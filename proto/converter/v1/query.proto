@@ -20,6 +20,11 @@ service Query {
   rpc TokenPair(QueryTokenPairRequest) returns (QueryTokenPairResponse) {
     option (google.api.http).get = "/evmos/ERC721/v1/token_pairs/{token}";
   }
+
+  // TokenTrace retrieves a cross-chain token trace
+  rpc TokenTrace(QueryTokenTraceRequest) returns (QueryTokenTraceResponse) {
+    option (google.api.http).get = "/evmos/ERC721/v1/token_trace/{class_id}/{token_id}";
+  }
 }
 
 // QueryTokenPairsRequest is the request type for the Query/TokenPairs RPC
@@ -50,6 +55,21 @@ message QueryTokenPairRequest {
 message QueryTokenPairResponse {
     // token_pairs returns the info about a registered token pair for the ERC721 module
     TokenPair token_pair = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryTokenTraceRequest is the request type for the Query/TokenTrace RPC method.
+message QueryTokenTraceRequest {
+    // class_id is class_id entered by the user (may be ibc_class_id or erc721 contract address)
+    string class_id = 1;
+     // token_id is token_id entered by the user (may be nft_id or erc721 token_id)
+    string token_id = 2;
+}
+
+// QueryTokenTraceResponse is the response type for the Query/TokenTrace RPC
+// method.
+message QueryTokenTraceResponse {
+    string class_id = 1;
+    string token_id = 2;
 }
 
 
