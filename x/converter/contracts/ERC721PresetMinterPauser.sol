@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "./IERC721Interface.sol";
 
 contract ERC721PresetMinterPauser is
-Context,
-AccessControlEnumerable,
-ERC721Pausable,
-IERC721PresetMinterPauser
+    Context,
+    AccessControlEnumerable,
+    ERC721Pausable,
+    IERC721PresetMinterPauser
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -55,10 +55,6 @@ IERC721PresetMinterPauser
         return _baseTokenURI;
     }
 
-    function getIERC721BaseInterfaceID() public pure returns (bytes4) {
-        return type(IERC721Base).interfaceId;
-    }
-
     /**
      * @dev Creates a new token for `to`. Its token ID will be automatically
      * assigned (and available on the emitted {IERC721-Transfer} event), and the token
@@ -86,10 +82,6 @@ IERC721PresetMinterPauser
         _setTokenData(tokenId, _tokenData);
     }
 
-    function callBaseURI(address to) public virtual returns (string memory) {
-        return IERC721Base(to).baseURI();
-    }
-
     /**
      * @dev Burns `tokenId`. See {ERC721-_burn}.
      * Requirements:
@@ -97,8 +89,8 @@ IERC721PresetMinterPauser
      */
     function burn(uint256 tokenId) public virtual {
         require(
-            _isApprovedOrOwner(_msgSender(), tokenId),
-            "ERC721: caller is not token owner or approved"
+            hasRole(BURNER_ROLE, _msgSender()),
+            "ERC721PresetMinterPauser: must have burner role to burn"
         );
         _burn(tokenId);
     }
