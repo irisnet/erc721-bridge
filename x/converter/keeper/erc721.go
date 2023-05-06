@@ -88,7 +88,7 @@ func (k Keeper) TransferFrom(ctx sdk.Context,
 ) error {
 	_, err := k.CallEVM(ctx,
 		erc721Abi,
-		types.ModuleAddress, contract, true,
+		from, contract, true,
 		types.ERC721MethodTransferFrom, from, to, tokenId)
 	if err != nil {
 		return err
