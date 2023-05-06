@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 
@@ -23,6 +24,7 @@ func GenerateERC721TokenID(classId string, nftId string) *big.Int {
 func GenerateNativeTokenID(erc721 common.Address, tokenId *big.Int) string {
 	// save mapping from classId+nftId to erc721TokenId
 	sourceData := fmt.Sprintf("%s/%s", erc721.String(), tokenId.String())
-	newTokenId := sha256.Sum256([]byte(sourceData))
-	return string(newTokenId[:])
+	hashData := sha256.Sum256([]byte(sourceData))
+	newTokenId := hex.EncodeToString(hashData[:])
+	return newTokenId
 }
