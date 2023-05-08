@@ -252,7 +252,7 @@ func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc
 
 // ERC721ToNFT delete the (ibcClassId,[]nftId) mapping
 func (ek erc721Keeper) DeleteTokenMapping(ctx sdk.Context, ibcClassId string, nftId []string) error {
-	erc721TokenIds := make([]*big.Int, 0, len(nftId))
+	erc721TokenIds := make([]*big.Int, len(nftId))
 
 	tokenStore := ek.tokenStore(ctx, []byte(ibcClassId))
 	for i, nftId := range nftId {
@@ -285,11 +285,12 @@ func (ek erc721Keeper) getERC721Token(ctx sdk.Context, classID, tokenID string) 
 			return common.Address{}, nil, err
 		}
 
-		classID = contractAddr.Hex()
 		id, err := ek.nftToERC721(ctx, classID, tokenID)
 		if err != nil {
 			return common.Address{}, nil, err
 		}
+
+		classID = contractAddr.Hex()
 		tokenID = id.String()
 	}
 
@@ -302,11 +303,14 @@ func (ek erc721Keeper) getERC721Token(ctx sdk.Context, classID, tokenID string) 
 }
 
 func (ek erc721Keeper) supportSysInterface(ctx sdk.Context, contract common.Address) bool {
-	interfaceId := common.FromHex(types.IERC721PresetMinterPauserInterfaceId)
+	interfaceIdBz := common.FromHex(types.IERC721PresetMinterPauserInterfaceId)
+	var interfaceID [4]byte
+
+	copy(interfaceID[:], interfaceIdBz)
 	support, err := ek.k.SupportsInterface(ctx,
 		contracts.ERC721PresetMinterPauserContract.ABI,
 		contract,
-		[4]byte(interfaceId),
+		interfaceID,
 	)
 	if err != nil {
 		return false
