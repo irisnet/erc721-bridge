@@ -1,7 +1,7 @@
 syntax = "proto3";
 package erc721_bridge.converter.v1;
 
-import "converter/v1/erc721.proto";
+import "erc721_bridge/converter/v1/erc721.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/irisnet/erc721-bridge/x/converter/types";

@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-import "converter/v1/erc721.proto";
+import "erc721_bridge/converter/v1/erc721.proto";
 
 option go_package = "github.com/irisnet/erc721-bridge/x/converter/types";
 
@@ -13,17 +13,17 @@ option go_package = "github.com/irisnet/erc721-bridge/x/converter/types";
 service Query {
   // TokenPairs retrieves registered token pairs
   rpc TokenPairs(QueryTokenPairsRequest) returns (QueryTokenPairsResponse) {
-    option (google.api.http).get = "/evmos/ERC721/v1/token_pairs";
+    option (google.api.http).get = "/evmos/erc721/v1/token_pairs";
   }
 
   // TokenPair retrieves a registered token pair
   rpc TokenPair(QueryTokenPairRequest) returns (QueryTokenPairResponse) {
-    option (google.api.http).get = "/evmos/ERC721/v1/token_pairs/{token}";
+    option (google.api.http).get = "/evmos/erc721/v1/token_pairs/{token}";
   }
 
   // TokenTrace retrieves a cross-chain token trace
   rpc TokenTrace(QueryTokenTraceRequest) returns (QueryTokenTraceResponse) {
-    option (google.api.http).get = "/evmos/ERC721/v1/token_trace/{class_id}/{token_id}";
+    option (google.api.http).get = "/evmos/erc721/v1/token_trace/{class_id}/{token_id}";
   }
 }
 
