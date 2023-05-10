@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"context"
+	"encoding/json"
 
 	"github.com/spf13/cobra"
 
@@ -10,20 +10,20 @@ import (
 
 	"github.com/bianjieai/nft-transfer/client/cli"
 
-	convertertypes "github.com/irisnet/erc721-bridge/x/converter/types"
+	"github.com/irisnet/erc721-bridge/x/nft-transfer/types"
 )
 
 // GetQueryCmd returns the parent command for all erc20 CLI query commands
-func GetQueryCmd() *cobra.Command {
+func GetQueryCmd(fn types.QueryTokenTrace) *cobra.Command {
 	cmd := cli.GetQueryCmd()
 	cmd.AddCommand(
-		GetTokenMappingCmd(),
+		GetTokenMappingCmd(fn),
 	)
 	return cmd
 }
 
 // GetTokenMappingCmd queries a cross-chain token trace
-func GetTokenMappingCmd() *cobra.Command {
+func GetTokenMappingCmd(queryTokenTrace types.QueryTokenTrace) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "token-trace <class_id> <token_id>",
 		Short: "Get a cross-chain token trace",
@@ -35,18 +35,19 @@ func GetTokenMappingCmd() *cobra.Command {
 				return err
 			}
 
-			queryClient := convertertypes.NewQueryClient(clientCtx)
-
-			req := &convertertypes.QueryTokenTraceRequest{
-				ClassId: args[0],
-				TokenId: args[1],
-			}
-
-			res, err := queryClient.TokenTrace(context.Background(), req)
+			traceClassId, traceTokenId, err := queryTokenTrace(clientCtx, args[0], args[1])
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintProto(res)
+
+			bz, err := json.Marshal(map[string]string{
+				"class_id": traceClassId,
+				"token_id": traceTokenId,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintBytes(bz)
 		},
 	}
 
