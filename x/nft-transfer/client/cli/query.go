@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"encoding/json"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -35,19 +33,11 @@ func GetTokenMappingCmd(queryTokenTrace types.QueryTokenTrace) *cobra.Command {
 				return err
 			}
 
-			traceClassId, traceTokenId, err := queryTokenTrace(clientCtx, args[0], args[1])
+			data, err := queryTokenTrace(clientCtx, args[0], args[1])
 			if err != nil {
 				return err
 			}
-
-			bz, err := json.Marshal(map[string]string{
-				"class_id": traceClassId,
-				"token_id": traceTokenId,
-			})
-			if err != nil {
-				return err
-			}
-			return clientCtx.PrintBytes(bz)
+			return clientCtx.PrintProto(data)
 		},
 	}
 
