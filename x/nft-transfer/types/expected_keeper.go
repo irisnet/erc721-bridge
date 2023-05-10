@@ -4,7 +4,9 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/gogo/protobuf/proto"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -19,3 +21,5 @@ type ConverterKeeper interface {
 
 	DeleteTokenMapping(ctx sdk.Context, classId string, nftId []string) error
 }
+
+type QueryTokenTrace = func(ctx client.Context, classId, tokenId string) (proto.Message, error)
