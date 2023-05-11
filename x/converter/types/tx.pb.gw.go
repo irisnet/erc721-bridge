@@ -242,9 +242,9 @@ func RegisterMsgHandlerClient(ctx context.Context, mux *runtime.ServeMux, client
 }
 
 var (
-	pattern_Msg_ConvertNFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"irismod", "erc721-converter", "convert-nft"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Msg_ConvertNFT_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"erc721_bridge", "converter", "v1", "tx", "convert-nft"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Msg_ConvertERC721_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"irismod", "erc721-converter", "convert-erc721"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Msg_ConvertERC721_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"erc721_bridge", "converter", "v1", "tx", "convert-erc721"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
