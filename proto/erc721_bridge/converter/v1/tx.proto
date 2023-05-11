@@ -13,12 +13,12 @@ service Msg {
     // ConvertNFT mints a ERC721 representation of the native Cosmos Class
     // that is registered on the token mapping.
     rpc ConvertNFT(MsgConvertNFT) returns (MsgConvertNFTResponse) {
-      option (google.api.http).post = "/irismod/erc721-converter/convert-nft";
+      option (google.api.http).post = "/erc721_bridge/converter/v1/convert-nft";
     };
     // ConvertERC721 mints a native Cosmos Class representation of the x/nft token
     // contract that is registered on the token mapping.
     rpc ConvertERC721(MsgConvertERC721) returns (MsgConvertERC721Response) {
-      option (google.api.http).post = "/irismod/erc721-converter/convert-erc721";
+      option (google.api.http).post = "/erc721_bridge/converter/v1/convert-erc721";
     };
 }
 
