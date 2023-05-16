@@ -23,13 +23,18 @@ type erc721Keeper struct {
 	k Keeper
 }
 
-func NewERC721Keeper(k Keeper) erc721Keeper {
+func (k Keeper) ERC721Keeper() erc721Keeper {
 	return erc721Keeper{k}
 }
 
 // CreateOrUpdateClass deploys an erc721 contract.
 // It will only be executed on the sink chain, and it will only be executed once
-func (ek erc721Keeper) CreateOrUpdateClass(ctx sdk.Context, ibcClassId string, classURI string, classData string) error {
+func (ek erc721Keeper) CreateOrUpdateClass(
+	ctx sdk.Context,
+	ibcClassId string,
+	classURI string,
+	classData string,
+) error {
 	if _, found := ek.ClassToContract(ctx, ibcClassId); found {
 		return nil
 	}
@@ -54,14 +59,21 @@ func (ek erc721Keeper) CreateOrUpdateClass(ctx sdk.Context, ibcClassId string, c
 	if err != nil {
 		return err
 	}
-	ek.mapClassAndContract(ctx, ibcClassId, contractAddr)
+	ek.traceClassAndContract(ctx, ibcClassId, contractAddr)
 	return nil
 }
 
 // Mint mint a erc721 token. It will only be executed on the sink chain, there are the following scenarios:
 // 1. when the token is far away from the original chain, the sink chain performs the mint operation
 // 2. when the token returns to the sink chain (timeout, failure), the sink chain executes the mint operation
-func (ek erc721Keeper) Mint(ctx sdk.Context, ibcClassId string, tokenID string, tokenURI string, tokenData string, receiver sdk.AccAddress) error {
+func (ek erc721Keeper) Mint(
+	ctx sdk.Context,
+	ibcClassId string,
+	tokenID string,
+	tokenURI string,
+	tokenData string,
+	receiver sdk.AccAddress,
+) error {
 	contractAddr, err := ek.classToContract(ctx, ibcClassId)
 	if err != nil {
 		return err
@@ -87,7 +99,7 @@ func (ek erc721Keeper) Mint(ctx sdk.Context, ibcClassId string, tokenID string, 
 	); err != nil {
 		return err
 	}
-	ek.mapERC721AndNFT(ctx, ibcClassId, tokenID, contractAddr, erc721TokenId)
+	ek.traceERC721AndNFT(ctx, ibcClassId, tokenID, contractAddr, erc721TokenId)
 	return nil
 }
 
@@ -98,18 +110,36 @@ func (ek erc721Keeper) Mint(ctx sdk.Context, ibcClassId string, tokenID string, 
 // 4. when the token is far away from the sink chain, the sink chain performs the unlock operation (timeout, failure return), (classId, tokenID)=(ibcClassId, nftId)
 // 5. when the token returns to the origin chain, the origin chain performs the unlock operation (transfer), (classId, tokenID)=(contractAddr, erc721TokenId)
 // 6. when the token returns to the sink chain, the origin chain executes the unlock operation (transfer), (classId, tokenID)=(ibcClassId, nftId)
-func (ek erc721Keeper) Transfer(ctx sdk.Context, classID string, tokenID string, tokenData string, receiver sdk.AccAddress) error {
+func (ek erc721Keeper) Transfer(
+	ctx sdk.Context,
+	classID string,
+	tokenID string,
+	tokenData string,
+	receiver sdk.AccAddress,
+) error {
 	contractAddr, erc721TokenId, err := ek.getERC721Token(ctx, classID, tokenID)
 	if err != nil {
 		return err
 	}
 
 	// Note: nft-transfer will verify the owner of the token, so here you can directly use the owner to operate
-	owner, err := ek.k.OwnerOf(ctx, contracts.ERC721PresetMinterPauserContract.ABI, contractAddr, erc721TokenId)
+	owner, err := ek.k.OwnerOf(
+		ctx,
+		contracts.ERC721PresetMinterPauserContract.ABI,
+		contractAddr,
+		erc721TokenId,
+	)
 	if err != nil {
 		return err
 	}
-	return ek.k.TransferFrom(ctx, contractAddr, contracts.ERC721PresetMinterPauserContract.ABI, owner, common.BytesToAddress(receiver), erc721TokenId)
+	return ek.k.TransferFrom(
+		ctx,
+		contractAddr,
+		contracts.ERC721PresetMinterPauserContract.ABI,
+		owner,
+		common.BytesToAddress(receiver),
+		erc721TokenId,
+	)
 }
 
 // Burn only be executed on the sink chain, if and only if the token returns to the original chain
@@ -123,7 +153,13 @@ func (ek erc721Keeper) Burn(ctx sdk.Context, ibcClassId string, nftId string) er
 	if err != nil {
 		return err
 	}
-	return ek.k.Burn(ctx, contractAddr, contracts.ERC721PresetMinterPauserContract.ABI, types.ModuleAddress, erc721TokenId)
+	return ek.k.Burn(
+		ctx,
+		contractAddr,
+		contracts.ERC721PresetMinterPauserContract.ABI,
+		types.ModuleAddress,
+		erc721TokenId,
+	)
 }
 
 // GetOwner will be executed on the origin and sink chains:
@@ -134,7 +170,12 @@ func (ek erc721Keeper) GetOwner(ctx sdk.Context, classID string, tokenID string)
 	if err != nil {
 		return sdk.AccAddress{}
 	}
-	owner, err := ek.k.OwnerOf(ctx, contracts.ERC721PresetMinterPauserContract.ABI, contractAddr, erc721TokenId)
+	owner, err := ek.k.OwnerOf(
+		ctx,
+		contracts.ERC721PresetMinterPauserContract.ABI,
+		contractAddr,
+		erc721TokenId,
+	)
 	if err != nil {
 		return sdk.AccAddress{}
 	}
@@ -194,7 +235,11 @@ func (ek erc721Keeper) GetClass(ctx sdk.Context, classID string) (nfttransfertyp
 }
 
 // GetNFT return the basic information of a nft (token_uri,token_data)
-func (ek erc721Keeper) GetNFT(ctx sdk.Context, classID string, tokenID string) (nfttransfertypes.NFT, bool) {
+func (ek erc721Keeper) GetNFT(
+	ctx sdk.Context,
+	classID string,
+	tokenID string,
+) (nfttransfertypes.NFT, bool) {
 	contractAddr, erc721TokenId, err := ek.getERC721Token(ctx, classID, tokenID)
 	if err != nil {
 		return nil, false
@@ -216,7 +261,10 @@ func (ek erc721Keeper) GetNFT(ctx sdk.Context, classID string, tokenID string) (
 }
 
 // ContractToClass returns the classId of the contract mapping
-func (ek erc721Keeper) ContractToClass(ctx sdk.Context, contractAddr common.Address) (string, bool) {
+func (ek erc721Keeper) ContractToClass(
+	ctx sdk.Context,
+	contractAddr common.Address,
+) (string, bool) {
 	store := ek.classStore(ctx)
 	bz := store.Get(contractAddr.Bytes())
 	if bz == nil || len(bz) == 0 {
@@ -241,7 +289,11 @@ func (ek erc721Keeper) HasContract(ctx sdk.Context, contract common.Address) boo
 }
 
 // ERC721ToNFT returns the nftId of the (contractAddr,erc721TokenId) mapping
-func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc721TokenId *big.Int) (string, bool) {
+func (ek erc721Keeper) ERC721ToNFT(
+	ctx sdk.Context,
+	contract common.Address,
+	erc721TokenId *big.Int,
+) (string, bool) {
 	erc721Store := ek.tokenStore(ctx, contract.Bytes())
 	bz := erc721Store.Get(erc721TokenId.Bytes())
 	if bz == nil || len(bz) == 0 {
@@ -251,7 +303,11 @@ func (ek erc721Keeper) ERC721ToNFT(ctx sdk.Context, contract common.Address, erc
 }
 
 // ERC721ToNFT delete the (ibcClassId,[]nftId) mapping
-func (ek erc721Keeper) DeleteTokenMapping(ctx sdk.Context, ibcClassId string, nftId []string) error {
+func (ek erc721Keeper) DeleteTokenMapping(
+	ctx sdk.Context,
+	ibcClassId string,
+	nftId []string,
+) error {
 	erc721TokenIds := make([]*big.Int, len(nftId))
 
 	tokenStore := ek.tokenStore(ctx, []byte(ibcClassId))
@@ -272,7 +328,64 @@ func (ek erc721Keeper) DeleteTokenMapping(ctx sdk.Context, ibcClassId string, nf
 	return nil
 }
 
-func (ek erc721Keeper) getERC721Token(ctx sdk.Context, classID, tokenID string) (common.Address, *big.Int, error) {
+// GetClassTrace return the all class trace
+func (ek erc721Keeper) GetClassTrace(ctx sdk.Context) (traces []types.ClassTrace) {
+	store := ek.classStore(ctx)
+	iterator := store.Iterator(nil, nil)
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		key := string(iterator.Key())
+		if !strings.HasPrefix(key, nfttransfertypes.ClassPrefix+"/") {
+			continue
+		}
+
+		classTrace := types.ClassTrace{
+			ClassId:  key,
+			Contract: common.Address(iterator.Value()).String(),
+		}
+
+		var tokenTraces []types.TokenTrace
+
+		tokenStore := ek.tokenStore(ctx, iterator.Key())
+		it := tokenStore.Iterator(nil, nil)
+		for ; it.Valid(); it.Next() {
+			tokenTraces = append(tokenTraces, types.TokenTrace{
+				TokenId:  string(it.Key()),
+				Erc721Id: new(big.Int).SetBytes(it.Value()).String(),
+			})
+		}
+		it.Close()
+
+		classTrace.Tokens = tokenTraces
+		traces = append(traces, classTrace)
+	}
+	return traces
+}
+
+// SetClassTrace save the class trace
+func (ek erc721Keeper) SetClassTrace(ctx sdk.Context, trace types.ClassTrace) {
+	contractAddr := common.HexToAddress(trace.Contract)
+	ek.traceClassAndContract(ctx, trace.ClassId, contractAddr)
+	for _, token := range trace.Tokens {
+		erc721Id, ok := new(big.Int).SetString(token.Erc721Id, 10)
+		if !ok {
+			panic("invalid erc721 token id")
+		}
+		ek.traceERC721AndNFT(
+			ctx,
+			trace.ClassId,
+			token.TokenId,
+			contractAddr,
+			erc721Id,
+		)
+	}
+}
+
+func (ek erc721Keeper) getERC721Token(
+	ctx sdk.Context,
+	classID, tokenID string,
+) (common.Address, *big.Int, error) {
 	var (
 		contractAddr  common.Address
 		erc721TokenId *big.Int
@@ -297,7 +410,11 @@ func (ek erc721Keeper) getERC721Token(ctx sdk.Context, classID, tokenID string) 
 	contractAddr = common.HexToAddress(classID)
 	erc721TokenId, ok = new(big.Int).SetString(tokenID, 10)
 	if !ok {
-		return common.Address{}, nil, errorsmod.Wrapf(types.ErrInvalidERC721TokenId, "token_id: %s", tokenID)
+		return common.Address{}, nil, errorsmod.Wrapf(
+			types.ErrInvalidERC721TokenId,
+			"token_id: %s",
+			tokenID,
+		)
 	}
 	return contractAddr, erc721TokenId, nil
 }
@@ -318,20 +435,24 @@ func (ek erc721Keeper) supportSysInterface(ctx sdk.Context, contract common.Addr
 	return support
 }
 
-func (ek erc721Keeper) mapClassAndContract(ctx sdk.Context, ibcClassId string, contractAddr common.Address) {
+func (ek erc721Keeper) traceClassAndContract(
+	ctx sdk.Context,
+	ibcClassId string,
+	contractAddr common.Address,
+) {
 	store := ek.classStore(ctx)
 	store.Set([]byte(ibcClassId), contractAddr.Bytes())
 	store.Set(contractAddr.Bytes(), []byte(ibcClassId))
 }
 
-func (ek erc721Keeper) mapERC721AndNFT(ctx sdk.Context,
+func (ek erc721Keeper) traceERC721AndNFT(ctx sdk.Context,
 	ibcClassId,
 	nftId string,
 	contractAddr common.Address,
 	erc721TokenId *big.Int,
 ) {
-	classStore := ek.tokenStore(ctx, []byte(ibcClassId))
-	classStore.Set([]byte(nftId), erc721TokenId.Bytes())
+	tokenStore := ek.tokenStore(ctx, []byte(ibcClassId))
+	tokenStore.Set([]byte(nftId), erc721TokenId.Bytes())
 
 	erc721Store := ek.tokenStore(ctx, contractAddr.Bytes())
 	erc721Store.Set(erc721TokenId.Bytes(), []byte(nftId))
@@ -341,16 +462,29 @@ func (ek erc721Keeper) classToContract(ctx sdk.Context, ibcClassId string) (comm
 	store := ek.classStore(ctx)
 	contractBz := store.Get([]byte(ibcClassId))
 	if contractBz == nil || len(contractBz) == 0 {
-		return common.Address{}, errorsmod.Wrapf(types.ErrNotFoundClassMapping, "class_id: %s", ibcClassId)
+		return common.Address{}, errorsmod.Wrapf(
+			types.ErrNotFoundClassMapping,
+			"class_id: %s",
+			ibcClassId,
+		)
 	}
 	return common.Address(contractBz), nil
 }
 
-func (ek erc721Keeper) nftToERC721(ctx sdk.Context, ibcClassId string, nftId string) (*big.Int, error) {
+func (ek erc721Keeper) nftToERC721(
+	ctx sdk.Context,
+	ibcClassId string,
+	nftId string,
+) (*big.Int, error) {
 	classStore := ek.tokenStore(ctx, []byte(ibcClassId))
 	bz := classStore.Get([]byte(nftId))
 	if bz == nil || len(bz) == 0 {
-		return nil, errorsmod.Wrapf(types.ErrNotFoundTokenMapping, "class_id: %s,token_id: %s", ibcClassId, nftId)
+		return nil, errorsmod.Wrapf(
+			types.ErrNotFoundTokenMapping,
+			"class_id: %s,token_id: %s",
+			ibcClassId,
+			nftId,
+		)
 	}
 	return new(big.Int).SetBytes(bz), nil
 }

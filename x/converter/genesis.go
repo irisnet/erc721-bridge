@@ -27,11 +27,17 @@ func InitGenesis(
 		k.SetClassMap(ctx, pair.ClassId, id)
 		k.SetERC721Map(ctx, pair.GetERC721Contract(), id)
 	}
+
+	erc721Keeper := k.ERC721Keeper()
+	for _, trace := range data.ClassTraces {
+		erc721Keeper.SetClassTrace(ctx, trace)
+	}
 }
 
 // ExportGenesis export module status
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return &types.GenesisState{
-		TokenPairs: k.GetTokenPairs(ctx),
+		TokenPairs:  k.GetTokenPairs(ctx),
+		ClassTraces: k.ERC721Keeper().GetClassTrace(ctx),
 	}
 }

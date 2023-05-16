@@ -10,4 +10,28 @@ option go_package = "github.com/irisnet/erc721-bridge/x/converter/types";
 message GenesisState {
   // token_pairs is a slice of the registered token pairs at genesis
   repeated TokenPair token_pairs = 1 [(gogoproto.nullable) = false];
+  // class_traces is a slice of the transfered on `erc-721` port token by nft-transfer
+  repeated ClassTrace class_traces = 2 [(gogoproto.nullable) = false];
+}
+
+// ClassTrace defines an instance that records a pairing consisting of a native
+//  class and an ERC721 contract.
+message ClassTrace {
+  option (gogoproto.equal) = true;
+  // class_id is the ibc class id
+  string class_id = 1;
+  // contract is the address of the erc721 contract
+  string contract = 2;
+  // tokens is a array of the token in class or the erc721 contract
+  repeated TokenTrace tokens = 3 [(gogoproto.nullable) = false];
+}
+
+// TokenTrace defines an instance that records a pairing consisting of a native
+//  nft and an ERC721 token.
+message TokenTrace {
+  option (gogoproto.equal) = true;
+  // token_id is the token id of the native nft module
+  string token_id = 1;
+  // erc721_id is the id of the erc721 contract token
+  string erc721_id = 2;
 }
