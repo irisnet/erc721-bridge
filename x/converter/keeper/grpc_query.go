@@ -19,7 +19,10 @@ import (
 )
 
 // TokenPairs returns all registered pairs
-func (k Keeper) TokenPairs(c context.Context, req *types.QueryTokenPairsRequest) (*types.QueryTokenPairsResponse, error) {
+func (k Keeper) TokenPairs(
+	c context.Context,
+	req *types.QueryTokenPairsRequest,
+) (*types.QueryTokenPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -46,7 +49,10 @@ func (k Keeper) TokenPairs(c context.Context, req *types.QueryTokenPairsRequest)
 }
 
 // TokenPair returns a given registered token pair
-func (k Keeper) TokenPair(c context.Context, req *types.QueryTokenPairRequest) (*types.QueryTokenPairResponse, error) {
+func (k Keeper) TokenPair(
+	c context.Context,
+	req *types.QueryTokenPairRequest,
+) (*types.QueryTokenPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -59,7 +65,8 @@ func (k Keeper) TokenPair(c context.Context, req *types.QueryTokenPairRequest) (
 		if err := sdk.ValidateDenom(req.Token); err != nil {
 			return nil, status.Errorf(
 				codes.InvalidArgument,
-				"invalid format for token %s, should be either hex ('0x...') cosmos denom", req.Token,
+				"invalid format for token %s, should be either hex ('0x...') cosmos denom",
+				req.Token,
 			)
 		}
 	}
@@ -79,24 +86,27 @@ func (k Keeper) TokenPair(c context.Context, req *types.QueryTokenPairRequest) (
 }
 
 // TokenTrace returns a cross-chain token trace
-func (k Keeper) TokenTrace(c context.Context, req *types.QueryTokenTraceRequest) (*types.QueryTokenTraceResponse, error) {
+func (k Keeper) TokenTrace(
+	c context.Context,
+	req *types.QueryTokenTraceRequest,
+) (*types.QueryTokenTraceResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	ics721Keeper := erc721Keeper{k}
+	erc721Keeper := k.ERC721Keeper()
 
 	// If the classId has an "ibc/" prefix, it only needs to be handed over to nft-transfer for processing,
 	// because nft-transfer has a trace to get the fullClassId of the original chain
 	if strings.HasPrefix(req.ClassId, "ibc/") {
-		contractAddr, ok := ics721Keeper.ClassToContract(ctx, req.ClassId)
+		contractAddr, ok := erc721Keeper.ClassToContract(ctx, req.ClassId)
 		if !ok {
 			return &types.QueryTokenTraceResponse{},
 				status.Errorf(codes.NotFound, "token mapping with class_id '%s'", req.ClassId)
 		}
 
-		tokenId, err := ics721Keeper.nftToERC721(ctx, req.ClassId, req.TokenId)
+		tokenId, err := erc721Keeper.nftToERC721(ctx, req.ClassId, req.TokenId)
 		if err != nil {
 			return &types.QueryTokenTraceResponse{},
 				status.Errorf(codes.NotFound, "token mapping with token_id '%s'", req.TokenId)
@@ -110,11 +120,15 @@ func (k Keeper) TokenTrace(c context.Context, req *types.QueryTokenTraceRequest)
 	// it means that the token is the nft of the native chain and can be directly handed over to nft-transfer for processing
 	if !common.IsHexAddress(req.ClassId) {
 		return &types.QueryTokenTraceResponse{},
-			status.Errorf(codes.InvalidArgument, "class_id '%s' is not valid contract address", req.ClassId)
+			status.Errorf(
+				codes.InvalidArgument,
+				"class_id '%s' is not valid contract address",
+				req.ClassId,
+			)
 	}
 
 	contractAddr := common.HexToAddress(req.ClassId)
-	ok := ics721Keeper.HasContract(ctx, contractAddr)
+	ok := erc721Keeper.HasContract(ctx, contractAddr)
 	// If classId is a contract address, but the contract does not exist,
 	// it means that this is just an nft of the chain (classId and contract address have the same format)
 	if !ok {
@@ -123,7 +137,7 @@ func (k Keeper) TokenTrace(c context.Context, req *types.QueryTokenTraceRequest)
 	}
 
 	//If there is no mapping between the contract and other nft, it means that this is a local erc721 token
-	ibcClassId, ok := ics721Keeper.ContractToClass(ctx, contractAddr)
+	ibcClassId, ok := erc721Keeper.ContractToClass(ctx, contractAddr)
 	if !ok {
 		return &types.QueryTokenTraceResponse{},
 			status.Errorf(codes.NotFound, "class_id '%s' mapping is not exist", req.ClassId)
@@ -132,10 +146,14 @@ func (k Keeper) TokenTrace(c context.Context, req *types.QueryTokenTraceRequest)
 	erc721TokenId, ok := new(big.Int).SetString(req.TokenId, 10)
 	if !ok {
 		return &types.QueryTokenTraceResponse{},
-			status.Errorf(codes.InvalidArgument, "token_id '%s' is not valid erc721 token_id", req.TokenId)
+			status.Errorf(
+				codes.InvalidArgument,
+				"token_id '%s' is not valid erc721 token_id",
+				req.TokenId,
+			)
 	}
 
-	tokenId, ok := ics721Keeper.ERC721ToNFT(ctx, contractAddr, erc721TokenId)
+	tokenId, ok := erc721Keeper.ERC721ToNFT(ctx, contractAddr, erc721TokenId)
 	if !ok {
 		return &types.QueryTokenTraceResponse{},
 			status.Errorf(codes.NotFound, "token_id '%s' mapping is not exist", req.TokenId)
