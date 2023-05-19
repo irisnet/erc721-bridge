@@ -23,7 +23,7 @@ service Query {
 
   // TokenTrace retrieves a cross-chain token trace
   rpc TokenTrace(QueryTokenTraceRequest) returns (QueryTokenTraceResponse) {
-    option (google.api.http).get = "/erc721_bridge/converter/v1/token_trace/{class_id}/{token_id}";
+    option (google.api.http).get = "/erc721_bridge/converter/v1/token_trace/{class_id=**}/{token_id}";
   }
 }
 

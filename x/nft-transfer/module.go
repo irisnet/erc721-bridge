@@ -1,8 +1,6 @@
 package bridge
 
 import (
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
@@ -10,7 +8,6 @@ import (
 	nfttransfer "github.com/bianjieai/nft-transfer"
 	"github.com/bianjieai/nft-transfer/types"
 
-	"github.com/irisnet/erc721-bridge/x/nft-transfer/client/cli"
 	"github.com/irisnet/erc721-bridge/x/nft-transfer/keeper"
 	bridgetypes "github.com/irisnet/erc721-bridge/x/nft-transfer/types"
 )
@@ -31,18 +28,11 @@ type AppModule struct {
 func NewAppModule(
 	app nfttransfer.AppModule,
 	k keeper.Keeper,
-	queryTokenTrace bridgetypes.QueryTokenTrace,
 ) AppModule {
 	return AppModule{
-		AppModule:         app,
-		k:                 k,
-		queryTokenTraceFn: queryTokenTrace,
+		AppModule: app,
+		k:         k,
 	}
-}
-
-// GetQueryCmd override the nft-transfer module AppModuleBasic.GetQueryCmd
-func (am AppModule) GetQueryCmd() *cobra.Command {
-	return cli.GetQueryCmd(am.queryTokenTraceFn)
 }
 
 // RegisterServices override the nft-transfer module AppModule.RegisterServices

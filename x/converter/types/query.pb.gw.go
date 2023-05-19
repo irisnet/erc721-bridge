@@ -383,7 +383,7 @@ var (
 
 	pattern_Query_TokenPair_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"erc721_bridge", "converter", "v1", "token_pair", "token"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_TokenTrace_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"erc721_bridge", "converter", "v1", "token_trace", "class_id", "token_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_TokenTrace_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 3, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"erc721_bridge", "converter", "v1", "token_trace", "class_id", "token_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
