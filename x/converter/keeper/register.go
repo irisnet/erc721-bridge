@@ -32,8 +32,8 @@ func (k Keeper) SaveRegisteredClass(ctx sdk.Context, sender sdk.AccAddress, clas
 			err, "failed to create wrapped coin denom metadata for ERC721",
 		)
 	}
-	pair := types.NewTokenPair(contractAddr, classInfo.GetID(), types.OWNER_MODULE)
-	k.SetTokenPair(ctx, pair)
+	pair := types.NewClassPair(contractAddr, classInfo.GetID(), types.OWNER_MODULE)
+	k.SetClassPair(ctx, pair)
 	k.SetClassMap(ctx, pair.ClassId, pair.GetID())
 	k.SetERC721Map(ctx, common.HexToAddress(pair.ContractAddress), pair.GetID())
 	return contractAddr, nil
@@ -69,8 +69,8 @@ func (k Keeper) SaveRegisteredERC721(ctx sdk.Context, contract common.Address) (
 			"failed to save class %s, contract address %s", classId, contract.String())
 	}
 
-	pair := types.NewTokenPair(contract, classId, types.OWNER_EXTERNAL)
-	k.SetTokenPair(ctx, pair)
+	pair := types.NewClassPair(contract, classId, types.OWNER_EXTERNAL)
+	k.SetClassPair(ctx, pair)
 	k.SetClassMap(ctx, pair.ClassId, pair.GetID())
 	k.SetERC721Map(ctx, common.HexToAddress(pair.ContractAddress), pair.GetID())
 	return classId, nil

@@ -30,7 +30,7 @@ func (k Keeper) ConvertNFT(goCtx context.Context, msg *types.MsgConvertNFT) (*ty
 	contractAddress := common.HexToAddress(pair.ContractAddress)
 	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, contractAddress)
 	if acc == nil || !acc.IsContract() {
-		k.DeleteTokenPair(ctx, pair)
+		k.DeleteClassPair(ctx, pair)
 		k.Logger(ctx).Debug(
 			"deleting selfdestructed token pair from state",
 			"contract", pair.ContractAddress,
@@ -78,7 +78,7 @@ func (k Keeper) ConvertERC721(goCtx context.Context, msg *types.MsgConvertERC721
 	}
 	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, common.HexToAddress(pair.ContractAddress))
 	if acc == nil || !acc.IsContract() {
-		k.DeleteTokenPair(ctx, pair)
+		k.DeleteClassPair(ctx, pair)
 		k.Logger(ctx).Debug(
 			"deleting selfdestructed token pair from state",
 			"contract", pair.ContractAddress,
@@ -106,7 +106,7 @@ func (k Keeper) ConvertERC721(goCtx context.Context, msg *types.MsgConvertERC721
 // convertNFTNativeNFT converts a native Cosmos token to an ERC721 token
 // 1. Lock Native NFT To Module Account
 // 2. Mint ERC721 Token To Receiver
-func (k Keeper) convertNFTNativeNFT(ctx sdk.Context, pair types.TokenPair, msg *types.MsgConvertNFT, receiver common.Address, sender sdk.AccAddress) (*types.MsgConvertNFTResponse, error) {
+func (k Keeper) convertNFTNativeNFT(ctx sdk.Context, pair types.ClassPair, msg *types.MsgConvertNFT, receiver common.Address, sender sdk.AccAddress) (*types.MsgConvertNFTResponse, error) {
 	tokenId, err := k.ConvertNFTMint(ctx, pair, msg, receiver, sender)
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ func (k Keeper) convertNFTNativeNFT(ctx sdk.Context, pair types.TokenPair, msg *
 // 1. Unlock ERC721 Token From ERC721 Contract
 // 2. Transfer ERC721 Token To Receiver
 // 3. Burn Native NFT
-func (k Keeper) convertNFTERC721(ctx sdk.Context, pair types.TokenPair, msg *types.MsgConvertNFT, receiver common.Address, sender sdk.AccAddress) (*types.MsgConvertNFTResponse, error) {
+func (k Keeper) convertNFTERC721(ctx sdk.Context, pair types.ClassPair, msg *types.MsgConvertNFT, receiver common.Address, sender sdk.AccAddress) (*types.MsgConvertNFTResponse, error) {
 	tokenId, err := k.ConvertNFTBurn(ctx, pair, msg, receiver, sender)
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ func (k Keeper) convertNFTERC721(ctx sdk.Context, pair types.TokenPair, msg *typ
 // convertERC721NativeNFT converts an ERC721 token to a native Cosmos token
 // 1. Lock ERC721 Token To Module Account
 // 2. Mint Native NFT To Receiver
-func (k Keeper) convertERC721NativeNFT(ctx sdk.Context, pair types.TokenPair, msg *types.MsgConvertERC721, receiver sdk.AccAddress, sender common.Address) (*types.MsgConvertERC721Response, error) {
+func (k Keeper) convertERC721NativeNFT(ctx sdk.Context, pair types.ClassPair, msg *types.MsgConvertERC721, receiver sdk.AccAddress, sender common.Address) (*types.MsgConvertERC721Response, error) {
 	tokenId, err := k.ConvertERC721Mint(ctx, pair, msg, receiver, sender)
 	if err != nil {
 		return nil, err
@@ -184,7 +184,7 @@ func (k Keeper) convertERC721NativeNFT(ctx sdk.Context, pair types.TokenPair, ms
 // 1. Unlock ERC721 Token From ERC721 Contract
 // 2. Transfer ERC721 Token To Receiver
 // 3. Burn Native NFT
-func (k Keeper) convertERC721NativeERC721(ctx sdk.Context, pair types.TokenPair, msg *types.MsgConvertERC721, receiver sdk.AccAddress, sender common.Address) (*types.MsgConvertERC721Response, error) {
+func (k Keeper) convertERC721NativeERC721(ctx sdk.Context, pair types.ClassPair, msg *types.MsgConvertERC721, receiver sdk.AccAddress, sender common.Address) (*types.MsgConvertERC721Response, error) {
 	tokenId, err := k.ConvertERC721Burn(ctx, pair, msg, receiver, sender)
 	if err != nil {
 		return nil, err

@@ -11,22 +11,22 @@ func (k Keeper) ConvertValidator(
 	ctx sdk.Context,
 	sender, receiver sdk.AccAddress,
 	token string,
-) (types.TokenPair, error) {
+) (types.ClassPair, error) {
 
-	id := k.GetTokenPairID(ctx, token)
+	id := k.GetClassPairID(ctx, token)
 	if len(id) == 0 {
-		return types.TokenPair{}, errorsmod.Wrapf(
+		return types.ClassPair{}, errorsmod.Wrapf(
 			types.ErrTokenPairNotFound, "class '%s' not registered by id", token,
 		)
 	}
-	pair, found := k.GetTokenPair(ctx, id)
+	pair, found := k.GetClassPair(ctx, id)
 	if !found {
-		return types.TokenPair{}, errorsmod.Wrapf(
+		return types.ClassPair{}, errorsmod.Wrapf(
 			types.ErrTokenPairNotFound, "class '%s' not registered", token,
 		)
 	}
 	if !sender.Equals(receiver) {
-		return types.TokenPair{}, errorsmod.Wrapf(
+		return types.ClassPair{}, errorsmod.Wrapf(
 			types.ErrUnauthorized, "sender must be equal to receiver", token,
 		)
 	}

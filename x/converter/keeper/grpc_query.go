@@ -18,21 +18,21 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
 
-// TokenPairs returns all registered pairs
-func (k Keeper) TokenPairs(
+// ClassPairs returns all registered pairs
+func (k Keeper) ClassPairs(
 	c context.Context,
-	req *types.QueryTokenPairsRequest,
-) (*types.QueryTokenPairsResponse, error) {
+	req *types.QueryClassPairsRequest,
+) (*types.QueryClassPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	var pairs []types.TokenPair
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixTokenPair)
+	var pairs []types.ClassPair
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixClassPair)
 
 	pageRes, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var pair types.TokenPair
+		var pair types.ClassPair
 		if err := k.cdc.Unmarshal(value, &pair); err != nil {
 			return err
 		}
@@ -42,17 +42,17 @@ func (k Keeper) TokenPairs(
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &types.QueryTokenPairsResponse{
-		TokenPairs: pairs,
+	return &types.QueryClassPairsResponse{
+		ClassPairs: pairs,
 		Pagination: pageRes,
 	}, nil
 }
 
-// TokenPair returns a given registered token pair
-func (k Keeper) TokenPair(
+// ClassPair returns a given registered token pair
+func (k Keeper) ClassPair(
 	c context.Context,
-	req *types.QueryTokenPairRequest,
-) (*types.QueryTokenPairResponse, error) {
+	req *types.QueryClassPairRequest,
+) (*types.QueryClassPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -61,28 +61,28 @@ func (k Keeper) TokenPair(
 
 	// check if the token is a hex address, if not, check if it is a valid SDK
 	// denom
-	if err := etherminttypes.ValidateAddress(req.Token); err != nil {
-		if err := sdk.ValidateDenom(req.Token); err != nil {
+	if err := etherminttypes.ValidateAddress(req.Class); err != nil {
+		if err := sdk.ValidateDenom(req.Class); err != nil {
 			return nil, status.Errorf(
 				codes.InvalidArgument,
 				"invalid format for token %s, should be either hex ('0x...') cosmos denom",
-				req.Token,
+				req.Class,
 			)
 		}
 	}
 
-	id := k.GetTokenPairID(ctx, req.Token)
+	id := k.GetClassPairID(ctx, req.Class)
 
 	if len(id) == 0 {
-		return nil, status.Errorf(codes.NotFound, "token pair with token '%s'", req.Token)
+		return nil, status.Errorf(codes.NotFound, "token pair with token '%s'", req.Class)
 	}
 
-	pair, found := k.GetTokenPair(ctx, id)
+	pair, found := k.GetClassPair(ctx, id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "token pair with token '%s'", req.Token)
+		return nil, status.Errorf(codes.NotFound, "token pair with token '%s'", req.Class)
 	}
 
-	return &types.QueryTokenPairResponse{TokenPair: pair}, nil
+	return &types.QueryClassPairResponse{ClassPair: pair}, nil
 }
 
 // TokenTrace returns a cross-chain token trace

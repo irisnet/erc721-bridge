@@ -25,9 +25,9 @@ func init() {
 
 // KVStore key prefixes
 var (
-	KeyPrefixTokenPair                    = []byte{0x01}
-	KeyPrefixTokenPairByERC721            = []byte{0x02}
-	KeyPrefixTokenPairByClass             = []byte{0x03}
+	KeyPrefixClassPair                    = []byte{0x01}
+	KeyPrefixClassPairByERC721            = []byte{0x02}
+	KeyPrefixClassPairByClass             = []byte{0x03}
 	KeyPrefixNativeTokenIDByERC721TokenID = []byte{0x04}
 	KeyPrefixERC721TokenIDByNativeTokenID = []byte{0x05}
 	KeyPrefixContractClass                = []byte{0x06}
@@ -58,5 +58,5 @@ const (
 )
 
 func KeyTokenIdPair(classId, nftId string) []byte {
-	return append(KeyPrefixTokenPair, []byte(classId+"/"+nftId)...)
+	return append(KeyPrefixClassPair, []byte(classId+"/"+nftId)...)
 }
