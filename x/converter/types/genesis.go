@@ -21,8 +21,8 @@ func (gs GenesisState) Validate() error {
 	seenClass := make(map[string]bool)
 
 	for _, b := range gs.TokenPairs {
-		if seenErc721[b.Erc721Address] {
-			return fmt.Errorf("token ERC721 contract duplicated on genesis '%s'", b.Erc721Address)
+		if seenErc721[b.ContractAddress] {
+			return fmt.Errorf("token ERC721 contract duplicated on genesis '%s'", b.ContractAddress)
 		}
 		if seenClass[b.ClassId] {
 			return fmt.Errorf("class duplicated on genesis: '%s'", b.ClassId)
@@ -32,7 +32,7 @@ func (gs GenesisState) Validate() error {
 			return err
 		}
 
-		seenErc721[b.Erc721Address] = true
+		seenErc721[b.ContractAddress] = true
 		seenClass[b.ClassId] = true
 	}
 

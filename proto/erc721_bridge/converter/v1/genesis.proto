@@ -12,6 +12,8 @@ message GenesisState {
   repeated TokenPair token_pairs = 1 [(gogoproto.nullable) = false];
   // class_traces is a slice of the transfered on `erc-721` port token by nft-transfer
   repeated ClassTrace class_traces = 2 [(gogoproto.nullable) = false];
+  // token_id_traces is a slice of the transfered on `erc-721` port token by nft-transfer
+  repeated TokenIdPair token_id_pairs = 3 [(gogoproto.nullable) = false];
 }
 
 // ClassTrace defines an instance that records a pairing consisting of a native
@@ -34,4 +36,16 @@ message TokenTrace {
   string token_id = 1;
   // erc721_id is the id of the erc721 contract token
   string erc721_id = 2;
+}
+
+message TokenIdPair {
+  option (gogoproto.equal) = true;
+  // erc721_address is the hex address of ERC721 contract token
+  string contract_address = 1;
+  // classId is the class of Cosmos x/nft Class ID
+  string class_id = 2;
+  // native_token_id is the token id of the native nft module
+  string native_token_id = 3;
+  // contract_token_id is the token id of ERC721 contract token
+  string contract_token_id = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }

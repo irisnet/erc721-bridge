@@ -35,7 +35,7 @@ func (k Keeper) SaveRegisteredClass(ctx sdk.Context, sender sdk.AccAddress, clas
 	pair := types.NewTokenPair(contractAddr, classInfo.GetID(), types.OWNER_MODULE)
 	k.SetTokenPair(ctx, pair)
 	k.SetClassMap(ctx, pair.ClassId, pair.GetID())
-	k.SetERC721Map(ctx, common.HexToAddress(pair.Erc721Address), pair.GetID())
+	k.SetERC721Map(ctx, common.HexToAddress(pair.ContractAddress), pair.GetID())
 	return contractAddr, nil
 }
 
@@ -72,6 +72,6 @@ func (k Keeper) SaveRegisteredERC721(ctx sdk.Context, contract common.Address) (
 	pair := types.NewTokenPair(contract, classId, types.OWNER_EXTERNAL)
 	k.SetTokenPair(ctx, pair)
 	k.SetClassMap(ctx, pair.ClassId, pair.GetID())
-	k.SetERC721Map(ctx, common.HexToAddress(pair.Erc721Address), pair.GetID())
+	k.SetERC721Map(ctx, common.HexToAddress(pair.ContractAddress), pair.GetID())
 	return classId, nil
 }

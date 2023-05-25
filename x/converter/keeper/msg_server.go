@@ -27,13 +27,13 @@ func (k Keeper) ConvertNFT(goCtx context.Context, msg *types.MsgConvertNFT) (*ty
 	if err != nil {
 		return nil, err
 	}
-	erc721 := common.HexToAddress(pair.Erc721Address)
-	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, erc721)
+	contractAddress := common.HexToAddress(pair.ContractAddress)
+	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, contractAddress)
 	if acc == nil || !acc.IsContract() {
 		k.DeleteTokenPair(ctx, pair)
 		k.Logger(ctx).Debug(
 			"deleting selfdestructed token pair from state",
-			"contract", pair.Erc721Address,
+			"contract", pair.ContractAddress,
 		)
 		// NOTE: return nil error to persist the changes from the deletion
 		return nil, nil
@@ -76,13 +76,12 @@ func (k Keeper) ConvertERC721(goCtx context.Context, msg *types.MsgConvertERC721
 	if err != nil {
 		return nil, err
 	}
-	erc721 := common.HexToAddress(pair.Erc721Address)
-	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, erc721)
+	acc := k.evmKeeper.GetAccountWithoutBalance(ctx, common.HexToAddress(pair.ContractAddress))
 	if acc == nil || !acc.IsContract() {
 		k.DeleteTokenPair(ctx, pair)
 		k.Logger(ctx).Debug(
 			"deleting selfdestructed token pair from state",
-			"contract", pair.Erc721Address,
+			"contract", pair.ContractAddress,
 		)
 		// NOTE: return nil error to persist the changes from the deletion
 		return nil, nil
@@ -121,7 +120,7 @@ func (k Keeper) convertNFTNativeNFT(ctx sdk.Context, pair types.TokenPair, msg *
 				sdk.NewAttribute(types.AttributeKeyReceiver, msg.Receiver),
 				sdk.NewAttribute(types.AttributeKeyClass, msg.ClassId),
 				sdk.NewAttribute(types.AttributeKeyCosmosNFT, msg.TokenId),
-				sdk.NewAttribute(types.AttributeKeyERC721, pair.Erc721Address),
+				sdk.NewAttribute(types.AttributeKeyERC721, pair.ContractAddress),
 				sdk.NewAttribute(types.AttributeKeyERC721Token, tokenId.String()),
 			),
 		},
@@ -148,7 +147,7 @@ func (k Keeper) convertNFTERC721(ctx sdk.Context, pair types.TokenPair, msg *typ
 				sdk.NewAttribute(types.AttributeKeyReceiver, msg.Receiver),
 				sdk.NewAttribute(types.AttributeKeyClass, msg.ClassId),
 				sdk.NewAttribute(types.AttributeKeyCosmosNFT, msg.TokenId),
-				sdk.NewAttribute(types.AttributeKeyERC721, pair.Erc721Address),
+				sdk.NewAttribute(types.AttributeKeyERC721, pair.ContractAddress),
 				sdk.NewAttribute(types.AttributeKeyERC721Token, tokenId.String()),
 			),
 		},
@@ -173,7 +172,7 @@ func (k Keeper) convertERC721NativeNFT(ctx sdk.Context, pair types.TokenPair, ms
 				sdk.NewAttribute(types.AttributeKeyReceiver, msg.Receiver),
 				sdk.NewAttribute(types.AttributeKeyClass, pair.ClassId),
 				sdk.NewAttribute(types.AttributeKeyCosmosNFT, msg.TokenId.String()),
-				sdk.NewAttribute(types.AttributeKeyERC721, pair.Erc721Address),
+				sdk.NewAttribute(types.AttributeKeyERC721, pair.ContractAddress),
 				sdk.NewAttribute(types.AttributeKeyERC721Token, tokenId),
 			),
 		},
@@ -198,7 +197,7 @@ func (k Keeper) convertERC721NativeERC721(ctx sdk.Context, pair types.TokenPair,
 				sdk.NewAttribute(types.AttributeKeyReceiver, msg.Receiver),
 				sdk.NewAttribute(types.AttributeKeyClass, pair.ClassId),
 				sdk.NewAttribute(types.AttributeKeyCosmosNFT, msg.TokenId.String()),
-				sdk.NewAttribute(types.AttributeKeyERC721, pair.Erc721Address),
+				sdk.NewAttribute(types.AttributeKeyERC721, pair.ContractAddress),
 				sdk.NewAttribute(types.AttributeKeyERC721Token, tokenId),
 			),
 		},

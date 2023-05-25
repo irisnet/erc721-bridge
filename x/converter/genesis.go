@@ -3,6 +3,7 @@ package converter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/irisnet/erc721-bridge/x/converter/keeper"
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
@@ -26,6 +27,14 @@ func InitGenesis(
 		k.SetTokenPair(ctx, pair)
 		k.SetClassMap(ctx, pair.ClassId, id)
 		k.SetERC721Map(ctx, pair.GetERC721Contract(), id)
+	}
+
+	for _, tokenIdPair := range data.TokenIdPairs {
+		k.SetNativeNftIdMap(ctx,
+			tokenIdPair.ClassId, tokenIdPair.NativeTokenId, tokenIdPair.ContractTokenId.BigInt())
+
+		k.SetERC721TokenIdMap(ctx,
+			common.HexToAddress(tokenIdPair.ContractAddress), tokenIdPair.ContractTokenId.BigInt(), tokenIdPair.NativeTokenId)
 	}
 
 	erc721Keeper := k.ERC721Keeper()

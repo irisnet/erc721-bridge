@@ -25,11 +25,6 @@ func (k Keeper) ConvertValidator(
 			types.ErrTokenPairNotFound, "class '%s' not registered", token,
 		)
 	}
-	if !pair.Enabled {
-		return types.TokenPair{}, errorsmod.Wrapf(
-			types.ErrERC721TokenPairDisabled, "minting token '%s' is not enabled by governance", token,
-		)
-	}
 	if !sender.Equals(receiver) {
 		return types.TokenPair{}, errorsmod.Wrapf(
 			types.ErrUnauthorized, "sender must be equal to receiver", token,
