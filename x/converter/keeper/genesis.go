@@ -42,7 +42,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, data types.GenesisState) {
 
 func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 	return &types.GenesisState{
-		ClassCollections: k.GetClassPairs(ctx),
+		ClassCollections: k.GetClassCollections(ctx),
 		ClassTraces:      k.ERC721Keeper().GetClassTrace(ctx),
 	}
 }

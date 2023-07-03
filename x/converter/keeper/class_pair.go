@@ -7,31 +7,34 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
 
-// GetClassPairs - get all registered class pair
-func (k Keeper) GetClassPairs(ctx sdk.Context) []types.ClassCollection {
-	classPairs := []types.ClassPair{}
-	k.IterateClassPair(ctx, func(classPair types.ClassPair) (stop bool) {
-		classPairs = append(classPairs, classPair)
-		return false
-	})
-
-	return nil
-}
-
-// IterateClassPair iterates over all the stored class pair
-func (k Keeper) IterateClassPair(ctx sdk.Context, cb func(ClassPair types.ClassPair) (stop bool)) {
+// GetClassCollections - get all the registered token pairs
+func (k Keeper) GetClassCollections(ctx sdk.Context) []types.ClassCollection {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefixClassPair)
 	defer iterator.Close()
 
+	var classCollections []types.ClassCollection
 	for ; iterator.Valid(); iterator.Next() {
 		var classPair types.ClassPair
 		k.cdc.MustUnmarshal(iterator.Value(), &classPair)
 
-		if cb(classPair) {
-			break
+		tokenStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyTokenPairPrefix(classPair.ClassId))
+		tokenIterator := tokenStore.Iterator(nil, nil)
+
+		var tokenTraces []types.TokenTrace
+		for ; tokenIterator.Valid(); tokenIterator.Next() {
+			var tokenTrace types.TokenTrace
+			k.cdc.MustUnmarshal(tokenIterator.Value(), &tokenTrace)
+			tokenTraces = append(tokenTraces, tokenTrace)
 		}
+		classCollections = append(classCollections, types.ClassCollection{
+			ClassPair: classPair,
+			Tokens:    tokenTraces,
+		})
+		tokenIterator.Close()
 	}
+
+	return classCollections
 }
 
 // GetClassPairID returns the pair id from either of the registered tokens.

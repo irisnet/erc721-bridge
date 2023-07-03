@@ -34,6 +34,10 @@ var (
 	KeyPrefixERC721NFT                    = []byte{0x07}
 )
 
+var (
+	Delimiter = []byte{0x00}
+)
+
 // ERC721 Method Names
 const (
 	ERC721MethodMintNFT           = "mint"
@@ -57,6 +61,19 @@ const (
 	IERC721PresetMinterPauserInterfaceId = "0x9f1bf2d9" // 3. System ERC721 Contract: https://github.com/irisnet/erc721-bridge/blob/main/x/converter/contracts/IERC721Interface.sol
 )
 
+func KeyTokenPairPrefix(classId string) []byte {
+	key := make([]byte, len(classId))
+	copy(key, KeyPrefixClassPair)
+	copy(key[len(KeyPrefixClassPair):], classId)
+	copy(key[len(KeyPrefixClassPair)+len(classId):], Delimiter)
+	return key
+}
+
 func KeyTokenIdPair(classId, nftId string) []byte {
-	return append(KeyPrefixClassPair, []byte(classId+"/"+nftId)...)
+	key := make([]byte, len(classId)+len(nftId))
+	copy(key, KeyPrefixClassPair)
+	copy(key[len(KeyPrefixClassPair):], classId)
+	copy(key[len(KeyPrefixClassPair)+len(classId):], Delimiter)
+	copy(key[len(KeyPrefixClassPair)+len(classId)+len(Delimiter):], nftId)
+	return key
 }
