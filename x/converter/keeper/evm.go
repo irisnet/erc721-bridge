@@ -21,13 +21,13 @@ import (
 // CallEVM performs a smart contract method call using given args
 func (k Keeper) CallEVM(
 	ctx sdk.Context,
-	abi abi.ABI,
-	from, contract common.Address,
+	contractABI abi.ABI,
+	from, to common.Address,
 	commit bool,
 	method string,
 	args ...interface{},
 ) (*evmtypes.MsgEthereumTxResponse, error) {
-	data, err := abi.Pack(method, args...)
+	data, err := contractABI.Pack(method, args...)
 	if err != nil {
 		return nil, errorsmod.Wrap(
 			types.ErrABIPack,
@@ -35,9 +35,9 @@ func (k Keeper) CallEVM(
 		)
 	}
 
-	resp, err := k.CallEVMWithData(ctx, from, &contract, data, commit)
+	resp, err := k.CallEVMWithData(ctx, from, &to, data, commit)
 	if err != nil {
-		return nil, errorsmod.Wrapf(err, "contract call failed: method '%s', contract '%s'", method, contract)
+		return nil, errorsmod.Wrapf(err, "contract call failed: method '%s', contract '%s'", method, to)
 	}
 	return resp, nil
 }
@@ -46,7 +46,7 @@ func (k Keeper) CallEVM(
 func (k Keeper) CallEVMWithData(
 	ctx sdk.Context,
 	from common.Address,
-	contract *common.Address,
+	contractAddress *common.Address,
 	data []byte,
 	commit bool,
 ) (*evmtypes.MsgEthereumTxResponse, error) {
@@ -59,7 +59,7 @@ func (k Keeper) CallEVMWithData(
 	if commit {
 		args, err := json.Marshal(evmtypes.TransactionArgs{
 			From: &from,
-			To:   contract,
+			To:   contractAddress,
 			Data: (*hexutil.Bytes)(&data),
 		})
 		if err != nil {
@@ -80,7 +80,7 @@ func (k Keeper) CallEVMWithData(
 
 	msg := ethtypes.NewMessage(
 		from,
-		contract,
+		contractAddress,
 		nonce,
 		big.NewInt(0), // amount
 		gasCap,        // gasLimit

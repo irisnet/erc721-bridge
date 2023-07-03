@@ -7,7 +7,8 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 )
 
-// GetClassCollections - get all the registered token pairs
+// GetClassCollections - get all the registered class pairs and their tokens
+// Genesis state only
 func (k Keeper) GetClassCollections(ctx sdk.Context) []types.ClassCollection {
 	store := ctx.KVStore(k.storeKey)
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyPrefixClassPair)
@@ -44,7 +45,7 @@ func (k Keeper) GetClassPairID(ctx sdk.Context, class string) []byte {
 		addr := common.HexToAddress(class)
 		return k.GetERC721Map(ctx, addr)
 	}
-	return k.GetDenomMap(ctx, class)
+	return k.GetClassMap(ctx, class)
 }
 
 // GetClassPair gets a registered token pair from the identifier.
@@ -92,8 +93,8 @@ func (k Keeper) GetERC721Map(ctx sdk.Context, erc721 common.Address) []byte {
 	return store.Get(erc721.Bytes())
 }
 
-// GetDenomMap returns the token pair id for the given denomination
-func (k Keeper) GetDenomMap(ctx sdk.Context, denom string) []byte {
+// GetClassMap returns the token pair id for the given class
+func (k Keeper) GetClassMap(ctx sdk.Context, denom string) []byte {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefixClassPairByClass)
 	return store.Get([]byte(denom))
 }

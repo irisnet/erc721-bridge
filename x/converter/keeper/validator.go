@@ -16,13 +16,13 @@ func (k Keeper) ConvertValidator(
 	id := k.GetClassPairID(ctx, token)
 	if len(id) == 0 {
 		return types.ClassPair{}, errorsmod.Wrapf(
-			types.ErrTokenPairNotFound, "class '%s' not registered by id", token,
+			types.ErrClassPairNotFound, "class '%s' not registered by id", token,
 		)
 	}
 	pair, found := k.GetClassPair(ctx, id)
 	if !found {
 		return types.ClassPair{}, errorsmod.Wrapf(
-			types.ErrTokenPairNotFound, "class '%s' not registered", token,
+			types.ErrClassPairNotFound, "class '%s' not registered", token,
 		)
 	}
 	if !sender.Equals(receiver) {
