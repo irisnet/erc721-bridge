@@ -140,10 +140,9 @@ func (m *MsgConvertNFTResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgConvertNFTResponse proto.InternalMessageInfo
 
-// MsgConvertERC721 defines a Msg to convert a ERC721 token to a native Cosmos
-// coin.
+// MsgConvertERC721 defines a Msg to convert a ERC721 token to a native Cosmos NFT
 type MsgConvertERC721 struct {
-	// contract_address of an ERC721 token contract, that is registered in a token pair
+	// contract_address of an ERC721 contract, that is registered in a class pair
 	ContractAddress string `protobuf:"bytes,1,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
 	// token_id of the ERC721 token to convert
 	TokenId github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"token_id"`

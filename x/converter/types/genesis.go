@@ -3,9 +3,9 @@ package types
 import "fmt"
 
 // NewGenesisState creates a new GenesisState object
-func NewGenesisState(tokenPairs []TokenPair) *GenesisState {
+func NewGenesisState(classCollections []ClassCollection) *GenesisState {
 	return &GenesisState{
-		TokenPairs: tokenPairs,
+		ClassCollections: classCollections,
 	}
 }
 
@@ -20,20 +20,19 @@ func (gs GenesisState) Validate() error {
 	seenErc721 := make(map[string]bool)
 	seenClass := make(map[string]bool)
 
-	for _, b := range gs.TokenPairs {
-		if seenErc721[b.Erc721Address] {
-			return fmt.Errorf("token ERC721 contract duplicated on genesis '%s'", b.Erc721Address)
+	for _, b := range gs.ClassCollections {
+		if seenErc721[b.ClassPair.ContractAddress] {
+			return fmt.Errorf("token ERC721 contract duplicated on genesis '%s'", b.ClassPair.ContractAddress)
 		}
-		if seenClass[b.ClassId] {
-			return fmt.Errorf("class duplicated on genesis: '%s'", b.ClassId)
+		if seenClass[b.ClassPair.ClassId] {
+			return fmt.Errorf("class duplicated on genesis: '%s'", b.ClassPair.ClassId)
 		}
 
-		if err := b.Validate(); err != nil {
+		if err := b.ClassPair.Validate(); err != nil {
 			return err
 		}
-
-		seenErc721[b.Erc721Address] = true
-		seenClass[b.ClassId] = true
+		seenErc721[b.ClassPair.ContractAddress] = true
+		seenClass[b.ClassPair.ClassId] = true
 	}
 
 	return nil

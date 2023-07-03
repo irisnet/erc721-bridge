@@ -14,7 +14,7 @@ import (
 // ConvertNFTMint converts a native Cosmos token to an ERC721 token
 func (k Keeper) ConvertNFTMint(
 	ctx sdk.Context,
-	pair types.TokenPair,
+	pair types.ClassPair,
 	msg *types.MsgConvertNFT,
 	receiver common.Address,
 	sender sdk.AccAddress,
@@ -74,7 +74,7 @@ func (k Keeper) ConvertNFTMint(
 
 // ConvertNFTBurn converts a erc721 token to an native Cosmos token
 func (k Keeper) ConvertNFTBurn(ctx sdk.Context,
-	pair types.TokenPair,
+	pair types.ClassPair,
 	msg *types.MsgConvertNFT,
 	receiver common.Address,
 	sender sdk.AccAddress) (*big.Int, error) {
@@ -128,7 +128,7 @@ func (k Keeper) ConvertNFTBurn(ctx sdk.Context,
 
 // ConvertERC721Mint converts a erc721 token to an native Cosmos token
 func (k Keeper) ConvertERC721Mint(ctx sdk.Context,
-	pair types.TokenPair,
+	pair types.ClassPair,
 	msg *types.MsgConvertERC721,
 	receiver sdk.AccAddress,
 	sender common.Address,
@@ -184,7 +184,7 @@ func (k Keeper) ConvertERC721Mint(ctx sdk.Context,
 
 // ConvertERC721Burn converts a native Cosmos token to an erc721 token
 func (k Keeper) ConvertERC721Burn(ctx sdk.Context,
-	pair types.TokenPair,
+	pair types.ClassPair,
 	msg *types.MsgConvertERC721,
 	receiver sdk.AccAddress,
 	sender common.Address,

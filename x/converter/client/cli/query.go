@@ -20,20 +20,20 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		GetTokenPairsCmd(),
-		GetTokenPairCmd(),
+		GetClassPairsCmd(),
+		GetClassPairCmd(),
 		GetTokenTraceCmd(),
 	)
 
 	return cmd
 }
 
-// GetTokenPairsCmd queries all registered token pairs
-func GetTokenPairsCmd() *cobra.Command {
+// GetClassPairsCmd queries all registered token pairs
+func GetClassPairsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-pairs",
-		Short: "Gets registered token pairs",
-		Long:  "Gets registered token pairs",
+		Use:   "class-pairs",
+		Short: "Gets registered class pairs",
+		Long:  "Gets registered class pairs",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clienCtx, err := client.GetClientQueryContext(cmd)
@@ -48,11 +48,11 @@ func GetTokenPairsCmd() *cobra.Command {
 				return err
 			}
 
-			req := &types.QueryTokenPairsRequest{
+			req := &types.QueryClassPairsRequest{
 				Pagination: pageReq,
 			}
 
-			res, err := queryClient.TokenPairs(context.Background(), req)
+			res, err := queryClient.ClassPairs(context.Background(), req)
 			if err != nil {
 				return err
 			}
@@ -65,12 +65,12 @@ func GetTokenPairsCmd() *cobra.Command {
 	return cmd
 }
 
-// GetTokenPairCmd queries a registered token pair
-func GetTokenPairCmd() *cobra.Command {
+// GetClassPairCmd queries a registered token pair
+func GetClassPairCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-pair TOKEN",
-		Short: "Get a registered token pair",
-		Long:  "Get a registered token pair",
+		Use:   "class-pair CLASS",
+		Short: "Get a registered class pair",
+		Long:  "Get a registered class pair",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -80,11 +80,11 @@ func GetTokenPairCmd() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			req := &types.QueryTokenPairRequest{
-				Token: args[0],
+			req := &types.QueryClassPairRequest{
+				Class: args[0],
 			}
 
-			res, err := queryClient.TokenPair(context.Background(), req)
+			res, err := queryClient.ClassPair(context.Background(), req)
 			if err != nil {
 				return err
 			}

@@ -8,8 +8,8 @@ option go_package = "github.com/irisnet/erc721-bridge/x/converter/types";
 
 // GenesisState defines the module's genesis state.
 message GenesisState {
-  // token_pairs is a slice of the registered token pairs at genesis
-  repeated TokenPair token_pairs = 1 [(gogoproto.nullable) = false];
+  // class_collections is a slice of the registered token pairs at genesis
+  repeated ClassCollection class_collections = 1 [(gogoproto.nullable) = false];
   // class_traces is a slice of the transfered on `erc-721` port token by nft-transfer
   repeated ClassTrace class_traces = 2 [(gogoproto.nullable) = false];
 }
@@ -34,4 +34,11 @@ message TokenTrace {
   string token_id = 1;
   // erc721_id is the id of the erc721 contract token
   string erc721_id = 2;
+}
+
+message ClassCollection {
+  option (gogoproto.equal) = true;
+  ClassPair class_pair = 1 [(gogoproto.nullable) = false];
+  // tokens is a array of the token in class or the erc721 contract
+  repeated TokenTrace tokens = 2 [(gogoproto.nullable) = false];
 }
