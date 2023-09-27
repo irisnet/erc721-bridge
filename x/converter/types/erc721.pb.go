@@ -56,7 +56,8 @@ func (Owner) EnumDescriptor() ([]byte, []int) {
 }
 
 // TokenPair defines an instance that records a pairing consisting of a native
-//  Cosmos Class and an ERC721 contract address.
+//
+//	Cosmos Class and an ERC721 contract address.
 type ClassPair struct {
 	// contract_address is the hex address of ERC721 contract token
 	ContractAddress string `protobuf:"bytes,1,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
