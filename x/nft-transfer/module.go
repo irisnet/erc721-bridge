@@ -3,13 +3,16 @@ package bridge
 import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 
 	nfttransfer "github.com/bianjieai/nft-transfer"
 	"github.com/bianjieai/nft-transfer/types"
 
 	"github.com/irisnet/erc721-bridge/x/nft-transfer/keeper"
 	bridgetypes "github.com/irisnet/erc721-bridge/x/nft-transfer/types"
+
+	// fix ambiguous import
+	_ "github.com/coinbase/rosetta-sdk-go/types"
 )
 
 var (

@@ -5,8 +5,8 @@ package types
 
 import (
 	fmt "fmt"
+	proto "github.com/cosmos/gogoproto/proto"
 	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -56,7 +56,8 @@ func (Owner) EnumDescriptor() ([]byte, []int) {
 }
 
 // TokenPair defines an instance that records a pairing consisting of a native
-//  Cosmos Class and an ERC721 contract address.
+//
+//	Cosmos Class and an ERC721 contract address.
 type ClassPair struct {
 	// contract_address is the hex address of ERC721 contract token
 	ContractAddress string `protobuf:"bytes,1,opt,name=contract_address,json=contractAddress,proto3" json:"contract_address,omitempty"`
