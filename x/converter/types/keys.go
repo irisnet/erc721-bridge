@@ -25,13 +25,17 @@ func init() {
 
 // KVStore key prefixes
 var (
-	KeyPrefixTokenPair                    = []byte{0x01}
-	KeyPrefixTokenPairByERC721            = []byte{0x02}
-	KeyPrefixTokenPairByClass             = []byte{0x03}
+	KeyPrefixClassPair                    = []byte{0x01}
+	KeyPrefixClassPairByERC721            = []byte{0x02}
+	KeyPrefixClassPairByClass             = []byte{0x03}
 	KeyPrefixNativeTokenIDByERC721TokenID = []byte{0x04}
 	KeyPrefixERC721TokenIDByNativeTokenID = []byte{0x05}
 	KeyPrefixContractClass                = []byte{0x06}
 	KeyPrefixERC721NFT                    = []byte{0x07}
+)
+
+var (
+	Delimiter = []byte{0x00}
 )
 
 // ERC721 Method Names
@@ -57,6 +61,19 @@ const (
 	IERC721PresetMinterPauserInterfaceId = "0x9f1bf2d9" // 3. System ERC721 Contract: https://github.com/irisnet/erc721-bridge/blob/main/x/converter/contracts/IERC721Interface.sol
 )
 
+func KeyTokenPairPrefix(classId string) []byte {
+	key := make([]byte, len(classId))
+	copy(key, KeyPrefixClassPair)
+	copy(key[len(KeyPrefixClassPair):], classId)
+	copy(key[len(KeyPrefixClassPair)+len(classId):], Delimiter)
+	return key
+}
+
 func KeyTokenIdPair(classId, nftId string) []byte {
-	return append(KeyPrefixTokenPair, []byte(classId+"/"+nftId)...)
+	key := make([]byte, len(classId)+len(nftId))
+	copy(key, KeyPrefixClassPair)
+	copy(key[len(KeyPrefixClassPair):], classId)
+	copy(key[len(KeyPrefixClassPair)+len(classId):], Delimiter)
+	copy(key[len(KeyPrefixClassPair)+len(classId)+len(Delimiter):], nftId)
+	return key
 }

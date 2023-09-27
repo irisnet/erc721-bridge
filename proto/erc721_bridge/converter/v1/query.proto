@@ -11,14 +11,14 @@ option go_package = "github.com/irisnet/erc721-bridge/x/converter/types";
 
 // Query defines the gRPC querier service for MT module
 service Query {
-  // TokenPairs retrieves registered token pairs
-  rpc TokenPairs(QueryTokenPairsRequest) returns (QueryTokenPairsResponse) {
-    option (google.api.http).get = "/erc721_bridge/converter/v1/token_pairs";
+  // ClassPairs retrieves registered class pairs
+  rpc ClassPairs(QueryClassPairsRequest) returns (QueryClassPairsResponse) {
+    option (google.api.http).get = "/erc721_bridge/converter/v1/class_pairs";
   }
 
-  // TokenPair retrieves a registered token pair
-  rpc TokenPair(QueryTokenPairRequest) returns (QueryTokenPairResponse) {
-    option (google.api.http).get = "/erc721_bridge/converter/v1/token_pair/{token}";
+  // ClassPair retrieves a registered class pair
+  rpc ClassPair(QueryClassPairRequest) returns (QueryClassPairResponse) {
+    option (google.api.http).get = "/erc721_bridge/converter/v1/class_pair/{class}";
   }
 
   // TokenTrace retrieves a cross-chain token trace
@@ -27,34 +27,34 @@ service Query {
   }
 }
 
-// QueryTokenPairsRequest is the request type for the Query/TokenPairs RPC
+// QueryClassPairsRequest is the request type for the Query/ClassPairs RPC
 // method.
-message QueryTokenPairsRequest {
+message QueryClassPairsRequest {
     // pagination defines an optional pagination for the request.
     cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
   
-// QueryTokenPairsResponse is the response type for the Query/TokenPairs RPC
+// QueryClassPairsResponse is the response type for the Query/ClassPairs RPC
 // method.
-message QueryTokenPairsResponse {
-    // token_pairs is a slice of registered token pairs for the ERC721 module
-    repeated TokenPair token_pairs = 1 [(gogoproto.nullable) = false];
+message QueryClassPairsResponse {
+    // class_pairs is a slice of registered class pairs for the ERC721 module
+    repeated ClassPair class_pairs = 1 [(gogoproto.nullable) = false];
     // pagination defines the pagination in the response.
     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryTokenPairRequest is the request type for the Query/TokenPair RPC method.
-message QueryTokenPairRequest {
+// QueryClassPairRequest is the request type for the Query/ClassPair RPC method.
+message QueryClassPairRequest {
     // token identifier can be either the hex contract address of the ERC721 or the
     // Cosmos base denomination
-    string token = 1;
+    string class = 1;
 }
   
-// QueryTokenPairResponse is the response type for the Query/TokenPair RPC
+// QueryClassPairResponse is the response type for the Query/ClassPair RPC
 // method.
-message QueryTokenPairResponse {
-    // token_pairs returns the info about a registered token pair for the ERC721 module
-    TokenPair token_pair = 1 [(gogoproto.nullable) = false];
+message QueryClassPairResponse {
+    // class_pairs returns the info about a registered class pair for the ERC721 module
+    ClassPair class_pair = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryTokenTraceRequest is the request type for the Query/TokenTrace RPC method.
