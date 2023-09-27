@@ -30,8 +30,9 @@ func NewKeeper(
 ) Keeper {
 
 	return Keeper{
-		storeKey:      storeKey,
-		cdc:           cdc,
+		storeKey: storeKey,
+		cdc:      cdc,
+
 		accountKeeper: ak,
 		evmKeeper:     evmKeeper,
 		nftKeeper:     nftKeeper,
