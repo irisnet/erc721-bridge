@@ -3,7 +3,6 @@ package converter
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -20,7 +19,7 @@ import (
 	"github.com/irisnet/erc721-bridge/x/converter/keeper"
 	"github.com/irisnet/erc721-bridge/x/converter/types"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 )
 
 // type check to ensure the interface is properly implemented
@@ -112,16 +111,8 @@ func (am AppModule) NewHandler() sdk.Handler {
 	return NewHandler(&am.keeper)
 }
 
-func (am AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, am.NewHandler())
-}
-
 func (am AppModule) QuerierRoute() string {
 	return types.RouterKey
-}
-
-func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
 }
 
 func (am AppModule) RegisterServices(cfg module.Configurator) {
@@ -149,14 +140,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 	return cdc.MustMarshalJSON(gs)
 }
 func (am AppModule) GenerateGenesisState(_ *module.SimulationState) {
-}
-
-func (am AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return []simtypes.WeightedProposalContent{}
-}
-
-func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-	return []simtypes.ParamChange{}
 }
 
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {

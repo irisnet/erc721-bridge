@@ -32,7 +32,7 @@ func (k Keeper) ConvertValidator(
 	}
 	if !sender.Equals(receiver) {
 		return types.TokenPair{}, errorsmod.Wrapf(
-			types.ErrUnauthorized, "sender must be equal to receiver", token,
+			types.ErrUnauthorized, "sender must be equal to receiver",
 		)
 	}
 

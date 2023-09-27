@@ -5,8 +5,8 @@ package types
 
 import (
 	fmt "fmt"
+	proto "github.com/cosmos/gogoproto/proto"
 	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -79,7 +79,8 @@ func (m *GenesisState) GetClassTraces() []ClassTrace {
 }
 
 // ClassTrace defines an instance that records a pairing consisting of a native
-//  class and an ERC721 contract.
+//
+//	class and an ERC721 contract.
 type ClassTrace struct {
 	// class_id is the ibc class id
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
@@ -144,7 +145,8 @@ func (m *ClassTrace) GetTokens() []TokenTrace {
 }
 
 // TokenTrace defines an instance that records a pairing consisting of a native
-//  nft and an ERC721 token.
+//
+//	nft and an ERC721 token.
 type TokenTrace struct {
 	// token_id is the token id of the native nft module
 	TokenId string `protobuf:"bytes,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`

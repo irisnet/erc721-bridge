@@ -3,7 +3,7 @@ package types
 import (
 	"github.com/ethereum/go-ethereum/common"
 	etherminttypes "github.com/evmos/ethermint/types"
-	"github.com/tendermint/tendermint/crypto/tmhash"
+	"github.com/cometbft/cometbft/crypto/tmhash"
 )
 
 func NewTokenPair(erc721Address common.Address, classId string, contractOwner Owner) TokenPair {
